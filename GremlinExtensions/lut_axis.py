@@ -4,7 +4,8 @@ from utils import LookupTable
 class LutAxis:
     def __init__(self, axis_id: int, lut: LookupTable, device_id: int = 1) -> None:
         """
-        A simple axis that use a LUT to linearly interpolate output values
+        A simple axis that uses a lookup table to linearly interpolate output
+        values.
 
         Args:
             * axis_id (int): vjoy axis ID
