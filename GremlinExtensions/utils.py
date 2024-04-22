@@ -89,10 +89,14 @@ class Vec2:
     @staticmethod
     def From(v):
         '''returns Vec2, created from a tuple or list, or another Vec2'''
-        if isinstance(v, Vec2):
-            return Vec2.Copy(v)
-        else:
-            return Vec2(v[0], v[1])
+        return Vec2(v[0], v[1])
+    
+    def __getitem__(self, idx) -> float:
+        if idx == 0:
+            return self.x
+        if idx == 1:
+            return self.y
+        raise IndexError
 
     def __str__(self) -> str:
         return f"<{self.x}, {self.y}>"
@@ -163,6 +167,33 @@ class Vec2:
         return (p2.y - p1.y) / (p2.x - p1.x)
 
 
+class LookupTable:
+    def __init__(self, keys, vals) -> None:
+        '''a lookup table that linearly interpolates between values'''
+        self.keys = keys
+        self.vals = vals
+    
+    @staticmethod
+    def FromPoints(*points):
+        '''
+        returns a lookup table created from points, where each point is a (key,
+        value)
+        '''
+        keys = [p[0] for p in points]
+        vals = [p[1] for p in points]
+        return LookupTable(keys, vals)
+
+    def output(self, input) -> float:
+        '''lerps to calc output based on input'''
+        floor_idx = binary_floor_excl(self.keys, input)
+        ceil_idx = floor_idx + 1
+        return lerp(self.keys[floor_idx], self.vals[floor_idx],
+                    self.keys[ceil_idx], self.vals[ceil_idx], 
+                    input)
+    
+    # TODO add another function to handle the case where input may be OOB?
+
+
 if __name__ == "__main__":
     p1 = Vec2(1, 2)
     p2 = Vec2(2, 3)
@@ -189,3 +220,7 @@ if __name__ == "__main__":
     assert(is_between(5, 12, -5) == True)
     assert(is_between(11, 20, 13) == False)
     assert(is_between(-2, -3, -4) == False)
+
+    lut = LookupTable([x for x in range(11)], [x * x for x in range(11)])
+    assert(lut.output(5) == 25)
+    assert(lut.output(7) == 49)
