@@ -1,0 +1,7 @@
+.vscode
+@Notes
+Profiles
+
+# ignore everything in plugins folder, except these files
+Plugins/*
+!Plugins/test_jg_extensions.py
