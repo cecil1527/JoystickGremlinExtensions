@@ -9,6 +9,14 @@ def clamp(num, min_val, max_val):
 
 
 def lerp(x1, y1, x2, y2, x) -> float:
+    '''
+    linear interpolation. given that:
+    
+    * x1 -> y1
+    * x2 -> y2
+    * what does x yield?
+    '''
+    
     # https://stackoverflow.com/questions/4353525/floating-point-linear-interpolation
 
     if x1 == x2:
