@@ -63,81 +63,91 @@ class AxisTuning:
 
 
 class TunedAxis:
-    def __init__(self, axis_id: int, left_tuning: AxisTuning, right_tuning: AxisTuning, 
+    def __init__(self, axis_id: int, right_tuning: AxisTuning, 
+                 left_tuning: AxisTuning = None, is_slider: bool = False, 
                  device_id: int = 1) -> None:
         """
-        applies tuning to axis input vals to generate output vals
-        
-        it's recommended to make right tuning first, then call
-        right_tuning.conjugate() to get the opposing side. this is because +/-
-        signs matter for the deadzone point and saturation point.
-
-        NOTE there's a separate standalone python script to display a UI with
-        graphs to show how it all works, since it can be hard to visualize.
+        applies tuning to axis input vals to generate transformed output vals
 
         Args:
             * axis_id (int): vjoy axis ID 
-            * left_tuning (AxisTuning): independent left tuning 
-            * right_tuning (AxisTuning): independent right tuning 
+            * right_tuning (AxisTuning): tuning used for right side.
+            * left_tuning (AxisTuning, optional): optional tuning for left side.
+              if None is provided, right's conjugate is used automatically.
+              Defaults to None.
+            * is_slider (bool, optional): if True, then input gets normalized
+              between [0, 1], and only right tuning is used. output will still
+              range from [-1, 1]. Defaults to False.
             * device_id (int, optional): vjoy device ID. Defaults to 1.
+        
+        NOTE there's a separate standalone python script to display a UI with
+        graphs to show how the transformations work, since it's hard to
+        visualize.
+
+        NOTE if you want asymmetrical tuning for left side, pay attention to the
+        signs on the deadzone and saturation points! +/- signs matter. all x/y
+        coords should probably be negative for the left side.
         """
         
-        self._left_tuning = left_tuning
         self._right_tuning = right_tuning
+        self._left_tuning = left_tuning if left_tuning else right_tuning.conjugate()
+        
+        self._is_slider = is_slider
         self._axis = VjoyAxis(axis_id, device_id)
 
-    def calc_output(self, input_val: float) -> float:
-        '''apply transformation to input and calculate output'''
-        if input_val < 0:
-            return self._left_tuning._transform_input(input_val)
-        else:
-            return self._right_tuning._transform_input(input_val)
+    def _calc_slider_output(self, input: float) -> float:
+        '''
+        will normalize input and unnormalize output to map right tuning over
+        the controller's entire range
+        '''
+        input = utils.normalize(input, -1, 1)
+        output = self._right_tuning._transform_input(input)
+        output = utils.unnormalize(output, -1, 1)
+        return output
 
-    def set(self, input_val: float) -> None:
-        '''calculate output and set vjoy axis's value to it'''
-        self._axis.set_val(self.calc_output(input_val))
-
-
-class SliderAxis:
-    def __init__(self, axis_id: int, tuning: AxisTuning, device_id: int = 1) -> None:
+    def calc_output(self, input: float) -> float:
         """
-        this is similar to a tuned axis except it normalizes the input value to
-        the range [0, 1]. this has the effect of using a single tuning for the
-        entire physical axis's range, which is most useful for sliders or
-        throttles, hence the name.
+        apply transformation to input and calculate output
 
         Args:
-            * axis_id (int): vjoy axis ID
-            * tuning (AxisTuning): axis tuning to be applied
-            * device_id (int, optional): vjoy device ID. Defaults to 1.
+            input (float) [-1, 1]: raw controller value
+
+        Returns:
+            float [-1, 1]: input transformed to output
         """
-        
-        self._tuning = tuning
-        self._axis = VjoyAxis(axis_id, device_id)
 
-    def calc_output(self, input_val: float) -> float:
-        '''apply transformation to input to calculate output'''
-        
-        input_val = utils.normalize(input_val, -1, 1)
-        return self._tuning._transform_input(input_val)
+        if self._is_slider:
+            return self._calc_slider_output(input)
 
-    def set(self, input_val: float) -> None:
-        '''calculate and set output'''
-        self._axis.set_val(self.calc_output(input_val))
+        # else we calculate output for an axis with a center
+        if input < 0:
+            return self._left_tuning._transform_input(input)
+        else:
+            return self._right_tuning._transform_input(input)
+
+    def set(self, input: float) -> None:
+        """
+        calculate output and set vjoy axis's value to it
+
+        Args:
+            input (float) [-1, 1]: raw controller value
+        """        
+
+        ''''''
+        self._axis.set_val(self.calc_output(input))
 
 
 if __name__ == "__main__":
-    r_tuning = AxisTuning(-0.5, deadzone_pt=(0.01, 0.1), saturation_pt=(0.9, 1))
-    l_tuning = r_tuning.conjugate()
+    tuning = AxisTuning(-0.5, deadzone_pt=(0.01, 0.1), saturation_pt=(0.9, 1))
     
-    tuned_axis = TunedAxis(1, l_tuning, r_tuning)
+    tuned_axis = TunedAxis(1, tuning)
     xs = [i / 100.0 for i in range(-100, 101, 1)]
     ys = [tuned_axis.calc_output(x) for x in xs]
-    print("\ntuned axis")
+    print("\ncentered axis")
     for x, y in zip(xs, ys):
         print(f"{x},{y}")
 
-    slider_axis = SliderAxis(1, r_tuning)
+    slider_axis = TunedAxis(1, tuning, is_slider=True)
     ys = [slider_axis.calc_output(x) for x in xs]
     print("\nslider axis")
     for x, y in zip(xs, ys):
