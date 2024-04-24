@@ -117,7 +117,7 @@ class DynamicTrimWidgets:
                 
             self.dyn_scaling_delay_tag = dpg.add_slider_float(width = width,
                 label="Dynamic Scaling Delay",
-                min_value=0, max_value=1, default_value=0.25, clamped=True, callback=on_update_fn)
+                min_value=0, max_value=1, default_value=0.2, clamped=True, callback=on_update_fn)
 
             dpg_add_blank_line()
 

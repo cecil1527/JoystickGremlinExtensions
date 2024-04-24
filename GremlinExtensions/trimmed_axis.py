@@ -19,8 +19,8 @@ class TrimmedAxis:
     def __init__(self, tuned_axis: TunedAxis, 
                  dyn_scaling_degree: float = 2, 
                  dyn_scaling_delay: float = 0.2,
-                 smooth_trim_easing_generator: EasingGenerator = None,
-                 trim_hat_easing_generator: EasingGenerator = None):
+                 smooth_trim_easing: EasingGenerator = None,
+                 trim_hat_easing: EasingGenerator = None):
         """
         this class was primarily created to address the shortcomings of
         helicopter trim using a conventional joystick (non-FFB joystick).
@@ -34,10 +34,10 @@ class TrimmedAxis:
               blending is done using a polynomial of this degree. Defaults to 2.
             * dyn_scaling_delay (float, optional): the physical controller range
               to delay dynamic coef scaling. Defaults to 0.2.
-            * smooth_trim_easing_generator (EasingGenerator): easing generator
-              that will be used when calling trim_smooth(). Defaults to None.
-            * trim_hat_easing_generator (EasingGenerator): easing generator that
-              will be used with trim hat. Defaults to None.
+            * smooth_trim_easing (EasingGenerator): easing generator that will
+              be used when calling trim_smooth(). Defaults to None.
+            * trim_hat_easing (EasingGenerator): easing generator that will be
+              used with trim hat. Defaults to None.
 
         Further explanation: 
         
@@ -63,10 +63,10 @@ class TrimmedAxis:
         self._dyn_scaling_degree = utils.clamp(dyn_scaling_degree, 0, 10)
         self._dyn_scaling_delay = utils.clamp(dyn_scaling_delay, 0, 1)
 
-        if smooth_trim_easing_generator:
-            self._smooth_trim_eg = smooth_trim_easing_generator.copy()
-        if trim_hat_easing_generator:
-            self._trim_hat_eg = trim_hat_easing_generator.copy()
+        if smooth_trim_easing:
+            self._smooth_trim_easing = smooth_trim_easing.copy()
+        if trim_hat_easing:
+            self._trim_hat_easing = trim_hat_easing.copy()
 
         self._trim_offset = 0
         self._max_scaling_coef = 0
@@ -218,7 +218,7 @@ class TrimmedAxis:
         # set the axis's value directly
         self._tuned_axis._axis.set_val(output)
 
-    def trim_inc(self, delta: float):
+    def inc_trim(self, delta: float):
         """
         instantly increments trim by the specified amount
         """        
@@ -269,13 +269,13 @@ class TrimmedAxis:
         sign = 1 if trim_delta >= 0 else -1
         trim_delta = abs(trim_delta)
 
-        self._smooth_trim_eg.reset()
-        self._smooth_trim_eg.set_magnitude(trim_delta)
+        self._smooth_trim_easing.reset()
+        self._smooth_trim_easing.set_magnitude(trim_delta)
 
-        for _ in range(self._smooth_trim_eg.get_num_steps()):
-            output = sign * self._smooth_trim_eg.get_output()
+        for _ in range(self._smooth_trim_easing.get_num_steps()):
+            output = sign * self._smooth_trim_easing.get_output()
             self.set_trim(starting_trim + output)
-            time.sleep(self._smooth_trim_eg.get_sleep_time())
+            time.sleep(self._smooth_trim_easing.get_sleep_time())
         
     def trim_central(self, trim: float = None, center: float = 0.05):
         """
@@ -318,11 +318,11 @@ class TrimmedAxis:
         self._is_hat_pressed = False
 
     def __async_trim_hat(self, direction: int):
-        self._trim_hat_eg.reset()
+        self._trim_hat_easing.reset()
         while self._is_hat_pressed:
-            trim_delta = direction * self._trim_hat_eg.get_output()
-            self.trim_inc(trim_delta)
-            time.sleep(self._trim_hat_eg.get_sleep_time())
+            trim_delta = direction * self._trim_hat_easing.get_output()
+            self.inc_trim(trim_delta)
+            time.sleep(self._trim_hat_easing.get_sleep_time())
 
 
 class CentralTrimmerBundle:
@@ -398,10 +398,10 @@ if __name__ == "__main__":
     tuned_axis = TunedAxis(1, l_tuning, r_tuning)
     
     trimmed_axis = TrimmedAxis(tuned_axis, 
-        smooth_trim_easing_generator=EasingGenerator.ConstantRate(SmoothStep(2, 2), 1, 1, 20))
+        smooth_trim_easing=EasingGenerator.ConstantRate(SmoothStep(2, 2), 1, 1, 20))
 
     trimmed_axis.set_vjoy(0, Scaling.Dynamic)
-    trimmed_axis.trim_inc(0.1)
+    trimmed_axis.inc_trim(0.1)
     
     trimmed_axis.set_trim(0)
     trimmed_axis.trim_smooth(0.1)

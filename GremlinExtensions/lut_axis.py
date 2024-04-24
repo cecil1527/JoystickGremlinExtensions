@@ -15,14 +15,17 @@ class LutAxis:
         Examples:
         
         * a throttle axis where you want a little flat spot at full MIL
-        
         * a slew axis where you want a flat spot on either side of center (so
           you can easily hit the slowest cursor speed)
-        
         * if you want to quickly jump out of the F-16's built-in deadzone, and
           then have the axis be linear (or add more points to emulate a curve)
           from there on out
-        """        
+        
+        NOTE JG basically already has this feature, because you can do very
+        similar things with bezier curves, but sometimes they're hard to work
+        with precisely and a LUT axis was easy enough to add.
+        """
+
         self._axis = VjoyAxis(axis_id, device_id)
         self._lut = lut
     
