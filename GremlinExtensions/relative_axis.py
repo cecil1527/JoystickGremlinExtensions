@@ -16,7 +16,7 @@ class RelativeAxis:
     # actually you can easily do it with two buttons as well. holding button 1
     # to inc the axis and then holding button 2 to dec the axis results in two
     # competing threads and releasing either of the buttons stops it all. 
-    
+    #
     # i'm just going to leave it for now. i'm not sure of a simple way to fix
     # that behavior. it's tempting to keep a list of presses and delete an entry
     # on release and only stop once the list is empty, but that won't work with
@@ -41,7 +41,7 @@ class RelativeAxis:
         """
 
         self._axis = VjoyAxis(axis_id, device_id)
-        self._easing_generator = easing_generator
+        self._easing_generator = easing_generator.copy()
         # keeps track of if button is pressed or not (for the async timer)
         self._is_pressed = False 
 
@@ -57,7 +57,7 @@ class RelativeAxis:
         threading.Thread(target=self.__run_async, args=[direction]).start()
 
     def release(self):
-        """stops the relative axis motion"""
+        """stops the relative axis's motion"""
 
         self._is_pressed = False
 

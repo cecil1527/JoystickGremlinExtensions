@@ -43,11 +43,10 @@ def unnormalize(norm, min_val, max_val, norm_low = 0.0, norm_high = 1.0):
 
 
 def sigmoid(input: float, curvature: float) -> float:
-
     '''
     applies sigmoid function to emulate DCS curvature
 
-    * input_val: [-1, 1]
+    * input: [-1, 1]
     * curvature: [-1, 1]
     
     * return: [-1, 1]
@@ -99,6 +98,10 @@ class Vec2:
         '''returns Vec2, created from a tuple or list, or another Vec2'''
         return Vec2(v[0], v[1])
     
+    @staticmethod
+    def ToTuple(v):
+        return (v.x, v.y)
+
     def __getitem__(self, idx) -> float:
         if idx == 0:
             return self.x
@@ -107,7 +110,7 @@ class Vec2:
         raise IndexError
 
     def __str__(self) -> str:
-        return f"<{self.x}, {self.y}>"
+        return f"({self.x}, {self.y})"
 
     def __eq__(self, other) -> bool:
         return Vec2.Equals(self, other)

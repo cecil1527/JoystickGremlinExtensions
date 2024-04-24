@@ -34,6 +34,10 @@ class AxisTuning:
         if self.saturation_pt.x < 0:
             self.max_pt *= -1
 
+    def __str__(self):
+        invert = False if self.inverted_coef == 1 else True
+        return f"AxisTuning({self.curvature}, {invert}, {str(self.deadzone_pt)}, {str(self.saturation_pt)})"
+
     def conjugate(self):
         '''returns another AxisTuning instance, but with opposite signs on points'''
         invert = False if self.inverted_coef == 1 else True
@@ -139,7 +143,8 @@ class TunedAxis:
 
 if __name__ == "__main__":
     tuning = AxisTuning(-0.5, deadzone_pt=(0.01, 0.1), saturation_pt=(0.9, 1))
-    
+    print(f"tuning = {str(tuning)}")
+
     tuned_axis = TunedAxis(1, tuning)
     xs = [i / 100.0 for i in range(-100, 101, 1)]
     ys = [tuned_axis.calc_output(x) for x in xs]
