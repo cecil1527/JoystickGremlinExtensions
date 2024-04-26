@@ -1,11 +1,9 @@
 import gremlin
 
-# modify the system path so that joystick gremlin's python environment will know
-# where to find the extensions. i think you can also put the extensions in the
-# default joystick gremlin profile save location
-import sys
-# put your path to JG extensions folder here
-sys.path.append(<path to GremlinExtensions folder goes here>)
+# read the `imports.py` file to know how to use it and what it does, but the
+# tl;dr is it'll allow you to import GremlinExtensions modules from anywhere you
+# put them
+import imports
 
 from utils import LookupTable
 from gremlin_interface import VjoyAxis, VjoyButton
@@ -22,15 +20,15 @@ from trimmed_axis import CentralTrimmerBundle, Scaling, TrimmedAxis
 
 # list the devices you need to reference in this plugin
 t50j = gremlin.input_devices.JoystickDecorator(
-	"RIGHT VPC Stick MT-50",
-	"{557F56C0-FDE9-11EE-8005-444553540000}",
-	"Default"
+    "RIGHT VPC Stick MT-50",
+    "{557F56C0-FDE9-11EE-8005-444553540000}",
+    "Default"
 )
 
 t50t = gremlin.input_devices.JoystickDecorator(
-	"LEFT VPC Throttle MT-50CM2",
-	"{2F0AFA80-FDE9-11EE-8003-444553540000}",
-	"Default"
+    "LEFT VPC Throttle MT-50CM2",
+    "{2F0AFA80-FDE9-11EE-8003-444553540000}",
+    "Default"
 )
 
 # test simply pressing a vjoy button with my VjoyButton wrapper ----------------
@@ -173,11 +171,11 @@ central_trim_bundle = CentralTrimmerBundle(
 def trim(event, joy):
     if event.is_pressed:
         if joy[t50j.device_guid].button(19).is_pressed:
-			# instantly reset trim if my paddle is pulled
+            # instantly reset trim if my paddle is pulled
             x_trimmed_axis.set_trim(0)
             y_trimmed_axis.set_trim(0)
             # (though you could use any other method of applying trim (central,
-			# timed, or smooth))
+            # timed, or smooth))
         else:
             # apply trim using one of these methods
             

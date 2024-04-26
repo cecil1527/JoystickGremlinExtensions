@@ -6,4 +6,8 @@ Profiles
 
 # ignore everything in plugins folder, except these files
 Plugins/*
+!Plugins/device_decorators.py
+!Plugins/helo_trim.py
+!Plugins/imports.py
 !Plugins/test_jg_extensions.py
+!Plugins/zoom_slider.py

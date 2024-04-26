@@ -4,7 +4,7 @@ from utils import Vec2
 
 
 class AxisTuning:
-    def __init__(self, curvature: float, 
+    def __init__(self, curvature: float = 0, 
                  invert: bool = False, 
                  deadzone_pt = (0, 0), 
                  saturation_pt = (1, 1), 
@@ -13,10 +13,10 @@ class AxisTuning:
         holds tuning values for an axis
 
         Args:
-            * curvature (float) [-1, 1]: curvature to apply to the response
-              curve. NOTE this is a different sigmoid function than what DCS
-              uses! curvature values will have to be higher here to get a
-              similar effect.
+            * curvature (float, optional) [-1, 1]: curvature to apply to the
+              response curve. NOTE this is a different sigmoid function than
+              what DCS uses! curvature values will have to be higher here to get
+              a similar effect. Defaults to 0.
             * invert (bool, optional): whether axis is inverted or not. Defaults
               to False.
             * deadzone_pt (tuple, optional): point where the deadzone stops.

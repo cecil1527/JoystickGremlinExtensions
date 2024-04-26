@@ -261,7 +261,7 @@ class TrimmedAxis:
 
     def __async_trim_smooth(self, trim: float):
         
-        if not trim:
+        if trim is None:
             trim = self._tuned_axis._axis.get_val()
 
         starting_trim = self._trim_offset

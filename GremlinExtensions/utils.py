@@ -88,6 +88,7 @@ def is_between(val, n1, n2):
     '''returns if val lies between n1 and n2 (order agnostic)'''
     return n1 <= val <= n2 or n2 <= val <= n1
 
+
 class Vec2:
     def __init__(self, x: float, y: float):
         self.x = x
