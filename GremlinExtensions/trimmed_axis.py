@@ -74,6 +74,7 @@ class TrimmedAxis:
 
         # vals for internal bookkeeping
         self._prev_raw_input = 0
+        self._prev_scaling = Scaling.Dynamic
         self._output_blocked = False
         self._is_hat_pressed = False
     
@@ -210,6 +211,7 @@ class TrimmedAxis:
         # always update prev raw input so we know when the physical stick gets
         # centered (for central pos trim mode)
         self._prev_raw_input = raw_input
+        self._prev_scaling = scaling_type
         
         if self._output_blocked:
             return
@@ -244,6 +246,7 @@ class TrimmedAxis:
     def __async_trim_timed(self, time_s: float):
         time.sleep(time_s)
         self._output_blocked = False
+        self.set_vjoy(self._prev_raw_input, self._prev_scaling)
 
     def trim_smooth(self, trim: float = None):
         """
@@ -275,6 +278,7 @@ class TrimmedAxis:
         for _ in range(self._smooth_trim_easing.get_num_steps()):
             output = sign * self._smooth_trim_easing.get_output()
             self.set_trim(starting_trim + output)
+            self.set_vjoy(self._prev_raw_input, self._prev_scaling)
             time.sleep(self._smooth_trim_easing.get_sleep_time())
         
     def trim_central(self, trim: float = None, center: float = 0.05):
@@ -298,6 +302,7 @@ class TrimmedAxis:
         while self._output_blocked:
             if abs(self._prev_raw_input) < center:
                 self._output_blocked = False
+                self.set_vjoy(self._prev_raw_input, self._prev_scaling)
             else:
                 time.sleep(0.020)
 
