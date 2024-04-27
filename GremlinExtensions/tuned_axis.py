@@ -55,7 +55,7 @@ class AxisTuning:
             # do middle curved section
             norm_x = utils.normalize(x, self.deadzone_pt.x, self.saturation_pt.x)
             norm_y = utils.sigmoid(norm_x, self.curvature)
-            y = utils.unnormalize(norm_y, self.deadzone_pt.y, self.saturation_pt.y)
+            y = utils.denormalize(norm_y, self.deadzone_pt.y, self.saturation_pt.y)
         
         else:
             # lerp between saturation point and max
@@ -101,12 +101,16 @@ class TunedAxis:
 
     def _calc_slider_output(self, input: float) -> float:
         '''
-        will normalize input and unnormalize output to map right tuning over
-        the controller's entire range
+        will normalize input and denormalize output to map right tuning over the
+        controller's entire range
         '''
         input = utils.normalize(input, -1, 1)
         output = self._right_tuning._transform_input(input)
-        output = utils.unnormalize(output, -1, 1)
+        if self._right_tuning.inverted_coef == -1:
+            # if inverted, output will end up in bottom quadrant, but that's not
+            # what we want for a slider, so offset it back up to 1st quadrant
+            output += 1
+        output = utils.denormalize(output, -1, 1)
         return output
 
     def calc_output(self, input: float) -> float:

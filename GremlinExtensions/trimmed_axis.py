@@ -135,7 +135,7 @@ class TrimmedAxis:
         # else calc a "dynamic" scaling coef. 
         
         # it's easiest to deal with normalized inputs/outputs ranging from [0,
-        # 1] which can be unnormalized later on. 
+        # 1] which can be denormalized later on. 
 
         # the normalized range over which scaling occurs 
         # 1. would normally be [0, 1]

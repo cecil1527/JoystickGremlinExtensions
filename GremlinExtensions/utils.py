@@ -34,7 +34,7 @@ def normalize(val, min_val, max_val, norm_low = 0.0, norm_high = 1.0):
     return lerp(min_val, norm_low, max_val, norm_high, val)
 
 
-def unnormalize(norm, min_val, max_val, norm_low = 0.0, norm_high = 1.0):
+def denormalize(norm, min_val, max_val, norm_low = 0.0, norm_high = 1.0):
     '''
     takes norm, in range of [norm_low, norm_high], and scales it to be in range
     of [min_val. max_val]

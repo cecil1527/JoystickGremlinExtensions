@@ -50,6 +50,31 @@ def calc_slopes(xs, ys):
     return slopes
 
 
+def draw_box(y_ax, x_range = (-1, 1), y_range = (-1, 1)):
+    '''draw a box surrounding x min/max and y min/max'''
+    
+    points = [
+        (x_range[0], y_range[1]),
+        (x_range[1], y_range[1]),
+        (x_range[1], y_range[0]),
+        (x_range[0], y_range[0]),
+        (x_range[0], y_range[1]),
+    ]
+    xs = [p[0] for p in points]
+    ys = [p[1] for p in points]
+
+    # https://dearpygui.readthedocs.io/en/latest/documentation/plots.html#colors-and-styles
+
+     # create a theme for the plot
+    with dpg.theme(tag="plot_theme"):
+        with dpg.theme_component(dpg.mvLineSeries):
+            dpg.add_theme_color(dpg.mvPlotCol_Line, (255, 255, 255, 255), category=dpg.mvThemeCat_Plots)
+            # dpg.add_theme_style(dpg.mvPlotStyleVar_LineWeight, 2, category=dpg.mvThemeCat_Plots)
+
+    dpg.add_line_series(xs, ys, label="Limits", parent=y_ax, tag="series_data")
+    dpg.bind_item_theme("series_data", "plot_theme")
+
+
 class DataSeries:
     def __init__(self, label: str, xs, dpg_parent_axis):
         '''
@@ -79,7 +104,7 @@ class TuningWidgets:
             width = 800
 
             self.deadzone_tag = dpg.add_slider_floatx(width = width,
-                label="Response Curve Start (X, Y) [can simulate deadzone]",
+                label="Deadzone Point (X, Y) [can create deadzone or get out of built-in deadzone]",
                 size=2, min_value=0, max_value=1, default_value=[0, 0], clamped=True, callback=on_update_fn)
             
             self.saturation_tag = dpg.add_slider_floatx(width = width,
@@ -91,6 +116,7 @@ class TuningWidgets:
                 min_value=-1, max_value=1, default_value=0, clamped=True, callback=on_update_fn)
             
             self.invert_tag = dpg.add_checkbox(label="Invert", callback=on_update_fn)
+            self.slider_tag = dpg.add_checkbox(label="Slider", callback=on_update_fn)
     
     def get_tuning(self) -> AxisTuning:
         deadzone_pt = Vec2.From(dpg.get_value(self.deadzone_tag))
@@ -153,15 +179,17 @@ class App:
             # make graphs
             with dpg.group(horizontal=True):
                 # save all data series dictionaries we get back
-                self.response = self.create_plot(
-                    "Response Curves", "Joystick Input", "VJoy Output"
+                self.response, y_ax = self.create_plot(
+                    "Response Curves", "Joystick Input", "VJoy Output", True
                 )
-                self.sensitivity = self.create_plot(
+                draw_box(y_ax)
+                self.sensitivity, y_ax = self.create_plot(
                     "Sensitivity Curves\n(Response Curve Derivative)", 
                     "Joystick Input", 
                     "Sensitivity (Delta VJoy Output / Delta Joystick Input)"
                 )
-                self.scaling = self.create_plot(
+                
+                self.scaling, y_ax = self.create_plot(
                     "Scaling Curves",
                     "Joystick Input",
                     "Polynomial Scaling Coefficient"
@@ -178,13 +206,21 @@ class App:
 
         self.update()
 
-    def create_plot(self, label: str, x_ax_label: str, y_ax_label: str):
+    def create_plot(self, label: str, x_ax_label: str, y_ax_label: str, 
+                    equal_aspects: bool = False):
         '''
-        adds plot. returns dictionary with 3 data series for scaling vals:
-        default, static, and dynamic
+        adds plot. 
+        
+        returns 
+        
+        1. dictionary with 3 data series for scaling vals: default, static, and
+           dynamic
+        2. y_axis tag, so you can plot more points if need be
         '''
 
-        with dpg.plot(label=label, width=self.plot_width, height=self.plot_height):
+        with dpg.plot(label=label, width=self.plot_width, height=self.plot_height, 
+                      equal_aspects=equal_aspects):
+            
             dpg.add_plot_legend()
 
             x_ax = dpg.add_plot_axis(dpg.mvXAxis, label=x_ax_label)
@@ -197,13 +233,14 @@ class App:
                 "dynamic": DataSeries("Dynamic Scaling", self.xs, y_ax)
             }
 
-            return d
+            return d, y_ax
 
     def update(self):
         # get vals and make trimmed axis
 
         r_tuning = self.tuning_widgets.get_tuning()
-        tuned_axis = TunedAxis(1, r_tuning)
+        slider = dpg.get_value(self.tuning_widgets.slider_tag)
+        tuned_axis = TunedAxis(1, r_tuning, is_slider=slider)
         
         dyn_scaling_degree, dyn_scaling_delay, trim = self.trim_widgets.get_vals()
         trimmed_axis = TrimmedAxis(tuned_axis, dyn_scaling_degree, dyn_scaling_delay)
