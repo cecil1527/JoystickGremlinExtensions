@@ -1,5 +1,5 @@
-from gremlin_interface import VjoyAxis
-import utils
+import jge.utils as utils
+from jge.gremlin_interface import VjoyAxis
 
 
 class StepperVals:

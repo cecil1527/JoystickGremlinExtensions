@@ -2,9 +2,9 @@ import threading
 import time
 from enum import Enum
 
-import utils
-from tuned_axis import TunedAxis, AxisTuning
-from easing_functions import EasingGenerator
+import jge.utils as utils
+from jge.tuned_axis import TunedAxis, AxisTuning
+from jge.easing_functions import EasingGenerator
 
 
 class Scaling(Enum):

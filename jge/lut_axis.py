@@ -1,5 +1,5 @@
-from gremlin_interface import VjoyAxis
-from utils import LookupTable
+from jge.gremlin_interface import VjoyAxis
+from jge.utils import LookupTable
 
 class LutAxis:
     def __init__(self, axis_id: int, lut: LookupTable, device_id: int = 1) -> None:

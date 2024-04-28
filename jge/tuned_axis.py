@@ -1,6 +1,6 @@
-import utils
-from gremlin_interface import VjoyAxis
-from utils import Vec2
+import jge.utils as utils
+from jge.utils import Vec2
+from jge.gremlin_interface import VjoyAxis
 
 
 class AxisTuning:

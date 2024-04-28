@@ -1,12 +1,10 @@
 from gremlin.user_plugin import *
 
-import imports
+from jge.easing_functions import EasingGenerator, SmoothStep
+from jge.tuned_axis import AxisTuning, TunedAxis
+from jge.trimmed_axis import Scaling, TrimmedAxis
 
-from easing_functions import EasingGenerator, SmoothStep
-from tuned_axis import AxisTuning, TunedAxis
-from trimmed_axis import Scaling, TrimmedAxis
-
-from device_decorators import stick, pedals
+from Plugins.device_decorators import stick, pedals
 
 # JG user plugins can display simple UI widgets like this:
 # https://whitemagic.github.io/JoystickGremlin/user_plugins/

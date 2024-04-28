@@ -1,20 +1,15 @@
 import gremlin
 
-# read the `imports.py` file to know how to use it and what it does, but the
-# tl;dr is it'll allow you to import GremlinExtensions modules from anywhere you
-# put them
-import imports
-
-from utils import LookupTable
-from gremlin_interface import VjoyAxis, VjoyButton
-from double_click_toggle import DoubleClickToggle
-from stepper_axis import StepperVals, StepperAxis
-from toggle_axis import ToggleAxis
-from relative_axis import RelativeAxis
-from easing_functions import EasingGenerator, SmoothStart, SmoothStep
-from lut_axis import LutAxis
-from tuned_axis import AxisTuning, TunedAxis
-from trimmed_axis import CentralTrimmerBundle, Scaling, TrimmedAxis
+from jge.utils import LookupTable
+from jge.gremlin_interface import VjoyAxis, VjoyButton
+from jge.double_click_toggle import DoubleClickToggle
+from jge.stepper_axis import StepperVals, StepperAxis
+from jge.toggle_axis import ToggleAxis
+from jge.relative_axis import RelativeAxis
+from jge.easing_functions import EasingGenerator, SmoothStart, SmoothStep
+from jge.lut_axis import LutAxis
+from jge.tuned_axis import AxisTuning, TunedAxis
+from jge.trimmed_axis import CentralTrimmerBundle, Scaling, TrimmedAxis
 
 # https://whitemagic.github.io/JoystickGremlin/user_plugins/
 

@@ -1,5 +1,7 @@
 import time
-from gremlin_interface import VjoyButton
+
+from jge.gremlin_interface import VjoyButton
+
 
 class DoubleClickToggle:
 

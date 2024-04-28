@@ -1,12 +1,10 @@
 from gremlin.user_plugin import *
 
-import imports
+import jge.utils as utils
+from jge.utils import LookupTable
+from jge.lut_axis import LutAxis
 
-import utils
-from utils import LookupTable
-from lut_axis import LutAxis
-
-from device_decorators import throttle
+from Plugins.device_decorators import throttle
 
 
 min_fov = IntegerVariable(

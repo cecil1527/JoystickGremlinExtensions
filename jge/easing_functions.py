@@ -1,5 +1,6 @@
 import copy
-import utils
+
+import jge.utils as utils
 
 
 class SmoothStart:

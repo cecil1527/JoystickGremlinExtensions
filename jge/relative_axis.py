@@ -1,9 +1,9 @@
 import threading
 import time
 
-from easing_functions import EasingGenerator
-from gremlin_interface import VjoyAxis
-import utils
+from jge.easing_functions import EasingGenerator
+from jge.gremlin_interface import VjoyAxis
+
 
 class RelativeAxis:
 

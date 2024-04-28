@@ -1,17 +1,9 @@
 import dearpygui.dearpygui as dpg
 import pyperclip
 
-# HACK append parent dir until i figure out a better way to import from parent
-# directory in python
-import sys
-from os import path
-parent_dir = path.dirname(path.dirname(path.abspath(__file__)))
-print(f"{parent_dir=}")
-sys.path.append(parent_dir)
-
-from utils import Vec2
-from tuned_axis import AxisTuning, TunedAxis
-from trimmed_axis import Scaling, TrimmedAxis
+from jge.utils import Vec2
+from jge.tuned_axis import AxisTuning, TunedAxis
+from jge.trimmed_axis import Scaling, TrimmedAxis
 
 
 widget_help_txt = '''Ctrl+click to enter a specific value.
