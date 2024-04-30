@@ -3,7 +3,7 @@ import time
 from enum import Enum
 
 import jge.utils as utils
-from jge.tuned_axis import TunedAxis, AxisTuning
+from jge.axes.tuned_axis import TunedAxis, AxisTuning
 from jge.easing_functions import EasingGenerator
 
 
@@ -396,7 +396,7 @@ class CentralTrimmerBundle:
 
 
 if __name__ == "__main__":
-    from easing_functions import SmoothStep
+    from jge.easing_functions import SmoothStep
 
     r_tuning = AxisTuning(0.5)
     l_tuning = r_tuning.conjugate()

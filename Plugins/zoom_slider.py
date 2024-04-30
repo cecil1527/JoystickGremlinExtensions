@@ -2,7 +2,7 @@ from gremlin.user_plugin import *
 
 import jge.utils as utils
 from jge.utils import LookupTable
-from jge.lut_axis import LutAxis
+from jge.axes.lut_axis import LutAxis
 
 from Plugins.device_decorators import throttle
 

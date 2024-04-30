@@ -1,8 +1,8 @@
 from gremlin.user_plugin import *
 
 from jge.easing_functions import EasingGenerator, SmoothStep
-from jge.tuned_axis import AxisTuning, TunedAxis
-from jge.trimmed_axis import Scaling, TrimmedAxis
+from jge.axes.tuned_axis import AxisTuning, TunedAxis
+from jge.axes.trimmed_axis import Scaling, TrimmedAxis
 
 from Plugins.device_decorators import stick, pedals
 

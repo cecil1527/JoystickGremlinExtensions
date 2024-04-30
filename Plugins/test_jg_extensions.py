@@ -3,13 +3,13 @@ import gremlin
 from jge.utils import LookupTable
 from jge.gremlin_interface import VjoyAxis, VjoyButton
 from jge.double_click_toggle import DoubleClickToggle
-from jge.stepper_axis import StepperVals, StepperAxis
-from jge.toggle_axis import ToggleAxis
-from jge.relative_axis import RelativeAxis
 from jge.easing_functions import EasingGenerator, SmoothStart, SmoothStep
-from jge.lut_axis import LutAxis
-from jge.tuned_axis import AxisTuning, TunedAxis
-from jge.trimmed_axis import CentralTrimmerBundle, Scaling, TrimmedAxis
+from jge.axes.stepper_axis import StepperVals, StepperAxis
+from jge.axes.toggle_axis import ToggleAxis
+from jge.axes.relative_axis import RelativeAxis
+from jge.axes.lut_axis import LutAxis
+from jge.axes.tuned_axis import AxisTuning, TunedAxis
+from jge.axes.trimmed_axis import CentralTrimmerBundle, Scaling, TrimmedAxis
 
 # https://whitemagic.github.io/JoystickGremlin/user_plugins/
 

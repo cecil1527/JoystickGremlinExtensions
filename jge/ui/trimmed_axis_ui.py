@@ -2,8 +2,8 @@ import dearpygui.dearpygui as dpg
 import pyperclip
 
 from jge.utils import Vec2
-from jge.tuned_axis import AxisTuning, TunedAxis
-from jge.trimmed_axis import Scaling, TrimmedAxis
+from jge.axes.tuned_axis import AxisTuning, TunedAxis
+from jge.axes.trimmed_axis import Scaling, TrimmedAxis
 
 
 widget_help_txt = '''Ctrl+click to enter a specific value.
