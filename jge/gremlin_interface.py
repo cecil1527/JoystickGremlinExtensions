@@ -8,10 +8,13 @@ if you run the code from a JG plugin, it should import the real gremlin package.
 but if you run the code standalone, then it'll import my little mock package
 instead
 '''
+
 try:
     import gremlin
 except ImportError:
     import jge.gremlin_mock as gremlin
+
+from jge import utils
 
 
 def _get_vjoy_proxy():
@@ -52,11 +55,18 @@ class VjoyAxis:
         return self.__axis.value
     
     def set_val(self, val) -> None:
+        val = utils.clamp(val, -1.0, 1.0)
         self.__axis.value = val
+
+        # NOTE JG clamps values that are OOB before sending them to vjoy, but it
+        # will spam the system log with warnings when doing it, so clamp here
+        # before setting vjoy axis val
 
     def inc_val(self, delta) -> None:
         '''increment axis value by delta'''
-        self.__axis.value += delta
+
+        # use set val so it clamps correctly
+        self.set_val(self.get_val() + delta)
 
 
 class VjoyButton:

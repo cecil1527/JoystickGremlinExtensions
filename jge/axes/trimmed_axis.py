@@ -17,6 +17,7 @@ class Scaling(Enum):
 
 class TrimmedAxis:
     def __init__(self, tuned_axis: TunedAxis, 
+                 clamp_output: bool = False,
                  dyn_scaling_degree: float = 2, 
                  dyn_scaling_delay: float = 0.2,
                  smooth_trim_easing: EasingGenerator = None,
@@ -30,6 +31,8 @@ class TrimmedAxis:
 
         Args:
             * tuned_axis (TunedAxis): tuned axis to use.
+            * clamp_output (bool, optional): clamps output to stay below tuned
+              axis's y saturation. Defaults to False.
             * dyn_scaling_degree (float, optional): dynamic scaling coef
               blending is done using a polynomial of this degree. Defaults to 2.
             * dyn_scaling_delay (float, optional): the physical controller range
@@ -41,14 +44,21 @@ class TrimmedAxis:
 
         Further explanation: 
         
+        1. clamp output: i'm not exactly sure what the desired behavior should
+           be when trimming with saturation points. the problem is if you
+           specify a y-saturation, then you're saying you don't want the vjoy
+           axis to ever go above 0.8 (for example). but when you trim, you will
+           definitely be able to hit more than 0.8 on the "close" side. so if
+           you don't want that to happen, set clamp output to true.
+
         1. the dynamic scaling degree and delay only affect dynamic scaling, so
-           if you use static scaling, these parameters will have no effect.
+           if you use static scaling, these parameters have no effect.
 
         1. a dynamic scaling delay of 0.2 means that no dynamic scaling will
            take place for 20% stick forward and 20% stick aft (or left/right),
-           which means it should feel *exactly* like it used when in that range.
-           once you exceed that range, scaling will be ramped on however heavily
-           is required to reach full in-game axis input with full stick
+           which means it should feel *exactly* like it used to when in that
+           range. once you exceed that range, scaling will be ramped on however
+           heavily is required to reach full in-game axis input with full stick
            deflection.
 
         1. easing generators are only required if you plan on using smooth trim
@@ -57,8 +67,9 @@ class TrimmedAxis:
         """            
 
         self._tuned_axis = tuned_axis
-        self._tuned_axis._left_tuning = self._tuned_axis._right_tuning.conjugate()
+        self._tuned_axis._left_tuning = self._tuned_axis._right_tuning
         # TODO i'm only going to support symmetrically tuned axes for now
+        self._clamp_output = clamp_output
         
         self._dyn_scaling_degree = utils.clamp(dyn_scaling_degree, 0, 10)
         self._dyn_scaling_delay = utils.clamp(dyn_scaling_delay, 0, 1)
@@ -99,21 +110,19 @@ class TrimmedAxis:
     def _recalc_max_scaling_coef(self):
         '''recalcs max scaling coef. call this after setting trim'''
 
-        # the basic idea is that using our current trim pos, you can calculate
-        # what scaling coef you'd need to hit the furthest away output
-        low_output = self._tuned_axis.calc_output(-1)
-        high_output = self._tuned_axis.calc_output(1)
+        # NOTE axes are symmetrical for now (same tuning for left and right).
+        # max output is +-saturation.y and the required input to do that is
+        # saturation.x
+        y_sat = self._tuned_axis._right_tuning.saturation_pt.y
         
-        low_dist = abs(self._trim_offset - low_output)
-        high_dist = abs(self._trim_offset - high_output)
-        
-        # scaling coef is then simply max dist. e.g. if we're trimmed 3/4 of the
-        # way forward (+0.75), the max we'd normally be able to reach is -0.25,
-        # since we can only ever apply an additional -1 on top of trim when
-        # pulling full back. this is not good enough. we need -1.75 (the max
-        # distance), so we must scale by 1.75. this ensures we can hit max
-        # in-game deflection with max stick deflection
-        self._max_scaling_coef = max(low_dist, high_dist)
+        # the max distance we'll have to go is abs(trim) + y saturation
+        max_dist = abs(self._trim_offset) + y_sat
+
+        # scaling coef is the ratio of this distance to the distance with 0 trim
+        self._max_scaling_coef = max_dist / y_sat
+
+        # NOTE if the scaling is correct, the far saturation point should not
+        # move as we trim!
     
     def _calc_dynamic_scaling_coef(self, raw_input: float) -> float:
         """
@@ -197,6 +206,12 @@ class TrimmedAxis:
         scaling_coef = self._get_scaling_coef(raw_input, scaling_type)
         output *= scaling_coef
         output += self._trim_offset
+        
+        if self._clamp_output:
+            # clamp so output can never be more than desired y saturation
+            y_sat = self._tuned_axis._right_tuning.saturation_pt.y
+            output = utils.clamp(output, -y_sat, y_sat)
+        
         return output
 
     def set_vjoy(self, raw_input: float, scaling_type: Scaling):
@@ -217,6 +232,7 @@ class TrimmedAxis:
             return
         
         output = self.calc_output(raw_input, scaling_type)
+        
         # set the axis's value directly
         self._tuned_axis._axis.set_val(output)
 
@@ -398,9 +414,8 @@ class CentralTrimmerBundle:
 if __name__ == "__main__":
     from jge.easing_functions import SmoothStep
 
-    r_tuning = AxisTuning(0.5)
-    l_tuning = r_tuning.conjugate()
-    tuned_axis = TunedAxis(1, l_tuning, r_tuning)
+    tuning = AxisTuning(0.5)
+    tuned_axis = TunedAxis(1, tuning)
     
     trimmed_axis = TrimmedAxis(tuned_axis, 
         smooth_trim_easing=EasingGenerator.ConstantRate(SmoothStep(2, 2), 1, 1, 20))

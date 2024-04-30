@@ -1,3 +1,5 @@
+import math
+
 import jge.utils as utils
 from jge.utils import Vec2
 from jge.gremlin_interface import VjoyAxis
@@ -21,8 +23,8 @@ class AxisTuning:
               to False.
             * deadzone_pt (tuple, optional): point where the deadzone stops.
               Defaults to (0, 0).
-            * saturation_pt (tuple, optional): point where saturation begins.
-              Defaults to (1, 1).
+            * saturation_pt (tuple, optional): point that contains x and y
+              saturation, similar to DCS. Defaults to (1, 1).
         """        
         self.curvature = curvature
         self.inverted_coef = -1 if invert else 1
@@ -30,39 +32,34 @@ class AxisTuning:
         self.saturation_pt = Vec2.From(saturation_pt)
         
         self.origin_pt = Vec2(0, 0)
-        self.max_pt = Vec2(1, 1)
-        if self.saturation_pt.x < 0:
-            self.max_pt *= -1
 
     def __str__(self):
         invert = False if self.inverted_coef == 1 else True
         return f"AxisTuning({self.curvature}, {invert}, {str(self.deadzone_pt)}, {str(self.saturation_pt)})"
 
-    def conjugate(self):
-        '''returns another AxisTuning instance, but with opposite signs on points'''
-        invert = False if self.inverted_coef == 1 else True
-        return AxisTuning(self.curvature, invert, 
-                          self.deadzone_pt * -1, self.saturation_pt * -1)
-
     def _transform_input(self, x: float) -> float:
         '''apply transformation to input to calculate output'''
-        if utils.is_between(x, self.origin_pt.x, self.deadzone_pt.x):
+
+        # it's easiest to use the abs value and correct the sign at the end
+        abs_x = abs(x)
+
+        if abs_x < self.deadzone_pt.x:
             # lerp between origin and deadzone end point
-            p = Vec2.LerpX(self.origin_pt, self.deadzone_pt, x)
+            p = Vec2.LerpX(self.origin_pt, self.deadzone_pt, abs_x)
             y = p.y
         
-        elif utils.is_between(x, self.deadzone_pt.x, self.saturation_pt.x):
-            # do middle curved section
-            norm_x = utils.normalize(x, self.deadzone_pt.x, self.saturation_pt.x)
+        elif abs_x < self.saturation_pt.x:
+            # only apply transformation to this section so we don't
+            # transform/move the deadzone point! so normalize/denormalize
+            norm_x = utils.normalize(abs_x, self.deadzone_pt.x, self.saturation_pt.x)
             norm_y = utils.sigmoid(norm_x, self.curvature)
             y = utils.denormalize(norm_y, self.deadzone_pt.y, self.saturation_pt.y)
         
         else:
-            # lerp between saturation point and max
-            p = Vec2.LerpX(self.saturation_pt, self.max_pt, x)
-            y = p.y
+            # else we simply limit output by saturation's y
+            y = self.saturation_pt.y
         
-        y *= self.inverted_coef
+        y = math.copysign(y, x) * self.inverted_coef
         return y
 
 
@@ -77,8 +74,7 @@ class TunedAxis:
             * axis_id (int): vjoy axis ID 
             * right_tuning (AxisTuning): tuning used for right side.
             * left_tuning (AxisTuning, optional): optional tuning for left side.
-              if None is provided, right's conjugate is used automatically.
-              Defaults to None.
+              if None is provided, right tuning is used. Defaults to None.
             * is_slider (bool, optional): if True, then input gets normalized
               between [0, 1], and only right tuning is used. output will still
               range from [-1, 1]. Defaults to False.
@@ -87,14 +83,10 @@ class TunedAxis:
         NOTE there's a separate standalone python script to display a UI with
         graphs to show how the transformations work, since it's hard to
         visualize.
-
-        NOTE if you want asymmetrical tuning for left side, pay attention to the
-        signs on the deadzone and saturation points! +/- signs matter. all x/y
-        coords should probably be negative for the left side.
         """
         
         self._right_tuning = right_tuning
-        self._left_tuning = left_tuning if left_tuning else right_tuning.conjugate()
+        self._left_tuning = left_tuning if left_tuning else right_tuning
         
         self._is_slider = is_slider
         self._axis = VjoyAxis(axis_id, device_id)

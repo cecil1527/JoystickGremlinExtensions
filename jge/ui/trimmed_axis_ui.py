@@ -96,11 +96,11 @@ class TuningWidgets:
             width = 800
 
             self.deadzone_tag = dpg.add_slider_floatx(width = width,
-                label="Deadzone Point (X, Y) [can create deadzone or get out of built-in deadzone]",
+                label="Deadzone Point (X, Y) [can create a deadzone or get out of a built-in deadzone]",
                 size=2, min_value=0, max_value=1, default_value=[0, 0], clamped=True, callback=on_update_fn)
             
             self.saturation_tag = dpg.add_slider_floatx(width = width,
-                label="Response Curve End (X, Y) [can simulate saturation]",
+                label="Saturation Point (X, Y)",
                 size=2, min_value=0, max_value=1, default_value=[1, 1], clamped=True, callback=on_update_fn)
             
             self.curvature_tag = dpg.add_slider_float(width = width,
@@ -119,7 +119,7 @@ class TuningWidgets:
         return AxisTuning(curvature, invert, deadzone_pt, saturation_pt)
 
 
-class DynamicTrimWidgets:
+class TrimWidgets:
     def __init__(self, label: str, on_update_fn):
         
         with dpg.tree_node(label=label, default_open=True):
@@ -139,16 +139,18 @@ class DynamicTrimWidgets:
 
             dpg_add_blank_line()
 
+            self.clamp_output_tag = dpg.add_checkbox(label="Clamp Output", callback=on_update_fn)
             self.trim_tag = dpg.add_slider_float(width = width,
                 label="Trim", 
                 min_value=-1, max_value=1, default_value=0, clamped=True, callback=on_update_fn)
 
     def get_vals(self):
+        clamp_output = dpg.get_value(self.clamp_output_tag)
         dyn_scaling_degree = dpg.get_value(self.dyn_scaling_degree_tag)
         dyn_scaling_delay = dpg.get_value(self.dyn_scaling_delay_tag)
         trim = dpg.get_value(self.trim_tag)
         
-        return dyn_scaling_degree, dyn_scaling_delay, trim
+        return clamp_output, dyn_scaling_degree, dyn_scaling_delay, trim
 
 
 class App:
@@ -159,7 +161,7 @@ class App:
         self.window_name = "Primary Window"
 
         # all data series can share the same x-vals
-        self.xs = [x / 500.0 for x in range(-500, 500)]
+        self.xs = [x / 500.0 for x in range(-500, 501)]
         self.xs = [x for x in self.xs]
 
         # tag the window. we'll use this tag to make it a primary window later.
@@ -187,11 +189,11 @@ class App:
                     "Polynomial Scaling Coefficient"
                 )
             
-            dpg_add_blank_line()
+            # dpg_add_blank_line()
             self.tuning_widgets = TuningWidgets("Tuning", self.update)
 
-            dpg_add_blank_line()
-            self.trim_widgets = DynamicTrimWidgets("Trim", self.update)
+            # dpg_add_blank_line()
+            self.trim_widgets = TrimWidgets("Trim", self.update)
 
             dpg_add_blank_line()
             dpg.add_button(label="Copy to clipboard", callback=self.copy_to_clipboard)
@@ -234,8 +236,8 @@ class App:
         slider = dpg.get_value(self.tuning_widgets.slider_tag)
         tuned_axis = TunedAxis(1, r_tuning, is_slider=slider)
         
-        dyn_scaling_degree, dyn_scaling_delay, trim = self.trim_widgets.get_vals()
-        trimmed_axis = TrimmedAxis(tuned_axis, dyn_scaling_degree, dyn_scaling_delay)
+        clamp_output, dyn_scaling_degree, dyn_scaling_delay, trim = self.trim_widgets.get_vals()
+        trimmed_axis = TrimmedAxis(tuned_axis, clamp_output, dyn_scaling_degree, dyn_scaling_delay)
         
         trimmed_axis.set_trim(trim)
 
@@ -255,11 +257,11 @@ class App:
 
     def copy_to_clipboard(self):
         tuning = self.tuning_widgets.get_tuning()
-        dyn_scaling_degree, dyn_scaling_delay, trim = self.trim_widgets.get_vals()
+        clamp_output, dyn_scaling_degree, dyn_scaling_delay, trim = self.trim_widgets.get_vals()
 
         s = f"tuning = {str(tuning)}"
         s += "\ntuned_axis = TunedAxis(#1, tuning, is_slider = False)"
-        s += f"\ntrimmed_axis = TrimmedAxis(tuned_axis, {dyn_scaling_degree}, {dyn_scaling_delay})"
+        s += f"\ntrimmed_axis = TrimmedAxis(tuned_axis, {clamp_output}, {dyn_scaling_degree}, {dyn_scaling_delay})"
 
         pyperclip.copy(s)
 
