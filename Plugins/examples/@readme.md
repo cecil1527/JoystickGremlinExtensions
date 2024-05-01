@@ -1,0 +1,1 @@
+When creating a JG profile, sometimes I'll use a handful of smaller, reusable user plugins. But other times I'll write a tailor-made plugin for a specific game or airframe. This folder will contain examples of that.
