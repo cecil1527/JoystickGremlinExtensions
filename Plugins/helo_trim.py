@@ -4,7 +4,7 @@ from jge.easing_functions import EasingGenerator, SmoothStep
 from jge.axes.tuned_axis import AxisTuning, TunedAxis
 from jge.axes.trimmed_axis import Scaling, TrimmedAxis
 
-from Plugins.device_decorators import stick, pedals
+from Plugins.device_decorators import stick, pedals, is_paddle_pulled
 
 # JG user plugins can display simple UI widgets like this:
 # https://whitemagic.github.io/JoystickGremlin/user_plugins/
@@ -49,10 +49,6 @@ def reset_trim():
     x_axis.trim_smooth(0)
     y_axis.trim_smooth(0)
     z_axis.trim_smooth(0)
-
-def is_paddle_pulled(joy):
-    '''helper function to return if my joystick's paddle is pulled'''
-    return joy[stick.device_guid].button(19).is_pressed
 
 # handle axis movement ---------------------------------------------------------
 

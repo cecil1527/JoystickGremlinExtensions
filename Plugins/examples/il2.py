@@ -1,14 +1,10 @@
-from Plugins.device_decorators import stick, throttle
+from Plugins.device_decorators import stick, throttle, is_paddle_pulled
 
 from jge.easing_functions import SmoothStart, EasingGenerator
 from jge.axes.stepper_axis import StepperVals, StepperAxis
 from jge.axes.relative_axis import RelativeAxis
 from jge.axes.axis_button import AxisButton
 from jge.sticky_buttons import StickyButtons
-
-def is_paddle_pulled(joy):
-    '''helper function to return if my joystick's paddle is pulled'''
-    return joy[stick.device_guid].button(19).is_pressed
 
 # prop pitch axis --------------------------------------------------------------
 

@@ -20,3 +20,12 @@ pedals = gremlin.input_devices.JoystickDecorator(
     "{BAF058E0-2812-11EE-8002-444553540000}",
     "Default"
 )
+
+def is_paddle_pulled(joy):
+    '''
+    helper function to return if my joystick's paddle is pulled. 
+    
+    NOTE has to take in the decorated joy parameter until i figure out a better
+    way to do it
+    '''
+    return joy[stick.device_guid].button(19).is_pressed
