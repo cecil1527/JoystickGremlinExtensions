@@ -9,7 +9,7 @@ class StepperVals:
     '''
 
     @staticmethod
-    def from_specific_vals(specific_vals,  val_range,  axis_range = (-1.0, 1.0)):
+    def FromSpecificVals(specific_vals,  val_range,  axis_range = (-1.0, 1.0)):
         """
         maps specific_vals in val_range to axis_range. 
         
@@ -35,7 +35,7 @@ class StepperVals:
         return vals
 
     @staticmethod
-    def from_range(num_vals: int, val_range, axis_range = (-1.0, 1.0), 
+    def FromRange(num_vals: int, val_range, axis_range = (-1.0, 1.0), 
                    curvature: float = 0):
         """
         maps values in val_range to axis_range, with curvature applied.
@@ -111,15 +111,19 @@ class StepperAxis:
         self._axis.set_val(self._vals[self._idx])
 
     def go_to_max_index(self):
+        '''go to max index and set vjoy axis'''
         self.go_to_index(len(self._vals) - 1)
 
     def go_to_min_index(self):
+        '''go to min index and set vjoy axis'''
         self.go_to_index(0)
 
     def next_index(self):
+        '''go to next index and set vjoy axis'''
         self.go_to_index(self._idx + 1)
 
     def prev_index(self):
+        '''go to prev index and set vjoy axis'''
         self.go_to_index(self._idx - 1)
 
     def next_value(self):
@@ -164,5 +168,5 @@ class StepperAxis:
 
 
 if __name__ == "__main__":
-    print(StepperVals.from_specific_vals([2400, 2700, 3000], (1000, 3000)))
-    print(StepperVals.from_range(31, (0, 1000), curvature=0.5))
+    print(StepperVals.FromSpecificVals([2400, 2700, 3000], (1000, 3000)))
+    print(StepperVals.FromRange(31, (0, 1000), curvature=0.5))

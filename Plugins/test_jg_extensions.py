@@ -4,6 +4,7 @@ from jge.utils import LookupTable
 from jge.gremlin_interface import VjoyAxis, VjoyButton
 from jge.double_click_toggle import DoubleClickToggle
 from jge.easing_functions import EasingGenerator, SmoothStart, SmoothStep
+from jge.axes.axis_button import AxisButton
 from jge.axes.stepper_axis import StepperVals, StepperAxis
 from jge.axes.toggle_axis import ToggleAxis
 from jge.axes.relative_axis import RelativeAxis
@@ -62,8 +63,27 @@ def double_click(event):
         paddle_double_click.release()
 
 
+# test axis button -------------------------------------------------------------
+axis_button = AxisButton(0.25)
+
+@t50t.axis(1)  # from slew x-axis
+def slew_moved(event, vjoy):
+    axis_button.update(event.value)
+    state = axis_button.get_state()
+    
+    # press a couple vjoy buttons for this example, though you can use the axis
+    # button's state to trigger anything you'd like
+    if state == AxisButton.State.PressedHigh:
+        vjoy[1].button(1).is_pressed = True
+    elif state == AxisButton.State.PressedLow:
+        vjoy[1].button(2).is_pressed = True
+    elif state == AxisButton.State.Released:
+        vjoy[1].button(1).is_pressed = False
+        vjoy[1].button(2).is_pressed = False
+
+
 # test stepper axis ------------------------------------------------------------
-wingspan_stepper_vals = StepperVals.from_specific_vals([33, 41, 53, 59, 74], (30, 120))
+wingspan_stepper_vals = StepperVals.FromSpecificVals([33, 41, 53, 59, 74], (30, 120))
 wingspan_stepper = StepperAxis(1, wingspan_stepper_vals, 0)
 
 @t50t.button(14)  # thumb rotary
