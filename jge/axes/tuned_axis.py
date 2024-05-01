@@ -1,6 +1,6 @@
 import math
 
-import jge.utils as utils
+from jge import utils
 from jge.utils import Vec2
 from jge.gremlin_interface import VjoyAxis
 

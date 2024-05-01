@@ -1,7 +1,7 @@
 import gremlin
 from gremlin.user_plugin import *
 
-import jge.utils as utils
+from jge import utils
 from jge.utils import LookupTable
 from jge.axes.lut_axis import LutAxis
 

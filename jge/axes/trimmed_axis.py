@@ -2,7 +2,7 @@ import threading
 import time
 from enum import Enum
 
-import jge.utils as utils
+from jge import utils
 from jge.axes.tuned_axis import TunedAxis, AxisTuning
 from jge.easing_functions import EasingGenerator
 
