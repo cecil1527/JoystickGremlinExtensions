@@ -11,6 +11,8 @@ Plugins/*
 !Plugins/helo_trim.py
 !Plugins/imports.py
 !Plugins/test_jg_extensions.py
+!Plugins/volume_axes.py
+!Plugins/volume_axis.py
 !Plugins/zoom_slider.py
 
 config.json

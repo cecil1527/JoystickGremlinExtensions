@@ -15,7 +15,7 @@ mode = ModeVariable(
 controller_axis = PhysicalInputVariable(
     "Controller Axis",
     "Which physical axis would you like to control zoom?",
-    # valid_types = [gremlin.types.InputType.JoystickAxis]
+    valid_types = [gremlin.common.InputType.JoystickAxis]
 )
 
 vjoy_axis_num = IntegerVariable(
