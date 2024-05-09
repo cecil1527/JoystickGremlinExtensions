@@ -83,3 +83,33 @@ class VjoyButton:
 
     def release(self) -> None:
         self.set_pressed(False)
+
+
+class KeyboardKey:
+    def __init__(self, key: str) -> None:
+        self._key = gremlin.macro.key_from_name(key)
+
+    def set_pressed(self, b: bool) -> None:
+        if b:
+            self.press()
+        else:
+            self.release()
+
+    def press(self) -> None:
+        gremlin.macro._send_key_down(self._key)
+
+    def release(self) -> None:
+        gremlin.macro._send_key_up(self._key)
+
+
+if __name__ == "__main__":
+    axis = VjoyAxis(1, 1)
+    axis.set_val(0.555)
+
+    button = VjoyButton(1, 1)
+    button.press()
+    button.release()
+
+    key = KeyboardKey("a")
+    key.press()
+    key.release()

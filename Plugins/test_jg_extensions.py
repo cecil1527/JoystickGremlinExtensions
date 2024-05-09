@@ -11,6 +11,9 @@ from jge.axes.relative_axis import RelativeAxis
 from jge.axes.lut_axis import LutAxis
 from jge.axes.tuned_axis import AxisTuning, TunedAxis
 from jge.axes.trimmed_axis import CentralTrimmerBundle, Scaling, TrimmedAxis
+from jge.buttons.chain import Chain
+from jge.buttons.macro import MacroEntries, Macro
+from jge.buttons.tempo import Tempo
 
 # https://whitemagic.github.io/JoystickGremlin/user_plugins/
 
@@ -276,3 +279,56 @@ def trim_left(event):
         x_trimmed_axis.press_trim_hat(-1)
     else:
         x_trimmed_axis.release_trim_hat()
+
+
+# test macros ------------------------------------------------------------------
+
+entries1 = MacroEntries.FromShorthand([1, 2, 3, 4, 5, 1.0, 6, 7, 8, 9, 10])
+macro1 = Macro(entries1, True)
+
+
+@t50t.button(85)  # B1
+def b1(event):
+    if event.is_pressed:
+        macro1.press()
+    else:
+        macro1.release()
+
+
+entries2 = MacroEntries.FromShorthand(["a", "b", "c"])
+macro2 = Macro(entries2, False)
+
+
+@t50t.button(86)  # B2
+def b2(event):
+    if event.is_pressed:
+        macro2.press()
+    else:
+        macro2.release()
+
+
+# test chain -------------------------------------------------------------------
+
+macro3 = Macro(MacroEntries.FromShorthand([1, 2, 3, 4]))
+macro4 = Macro(MacroEntries.FromShorthand([11, 12, 13, 14]))
+
+chain = Chain([macro3, macro4])
+
+
+@t50t.button(87)  # B3
+def b3(event):
+    if event.is_pressed:
+        chain.run_next()
+
+
+# test tempo -------------------------------------------------------------------
+
+tempo = Tempo(macro3, macro4, 0.5)
+
+
+@t50t.button(88)  # B4
+def b4(event):
+    if event.is_pressed:
+        tempo.press()
+    else:
+        tempo.release()
