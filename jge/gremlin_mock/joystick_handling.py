@@ -1,8 +1,8 @@
-'''
+"""
 these classes will mock the JG classes and get loaded automatically in
 `gremlin_interface.py` so i can run each JG extension as a standalone python
 script
-'''
+"""
 
 
 class MockAxis:

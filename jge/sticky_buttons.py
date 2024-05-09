@@ -10,26 +10,26 @@ class StickyButtons:
         Args:
             * button_ids (List[int]): vjoy button IDs to put into this group
             * device_id (int, optional): vjoy device ID. Defaults to 1.
-        
+
         Example: use anytime you need buttons to stick on, and want the ability
         to easily release all buttons before turning another button on so they
         don't conflict/fight one another.
-        """        
+        """
 
         self._buttons = {}
         for b_id in button_ids:
             self._buttons[b_id] = VjoyButton(b_id, device_id)
 
     def press(self, button_id: int) -> None:
-        '''press the button corresponding to the ID'''
+        """press the button corresponding to the ID"""
         self._buttons[button_id].press()
-    
+
     def release(self, button_id: int) -> None:
-        '''release the button corresponding to the ID'''
+        """release the button corresponding to the ID"""
         self._buttons[button_id].release()
 
     def release_all(self) -> None:
-        '''release all buttons'''
+        """release all buttons"""
         for b in self._buttons.values():
             b.release()
 

@@ -8,20 +8,23 @@ from jge.easing_functions import EasingGenerator
 
 
 class Scaling(Enum):
-    '''type of scaling you want done'''
-    
-    Nil = 1,        # no scaling (coef of 1)
-    Static = 2,     # static scaling coef. does not change with controller pos
-    Dynamic = 3,    # dynamic scaling coef. changes with controller pos
+    """type of scaling you want done"""
+
+    Nil = 1  # no scaling (coef of 1)
+    Static = 2  # static scaling coef. does not change with controller pos
+    Dynamic = 3  # dynamic scaling coef. changes with controller pos
 
 
 class TrimmedAxis:
-    def __init__(self, tuned_axis: TunedAxis, 
-                 clamp_output: bool = False,
-                 dyn_scaling_degree: float = 2, 
-                 dyn_scaling_delay: float = 0.2,
-                 smooth_trim_easing: EasingGenerator = None,
-                 trim_hat_easing: EasingGenerator = None):
+    def __init__(
+        self,
+        tuned_axis: TunedAxis,
+        clamp_output: bool = False,
+        dyn_scaling_degree: float = 2,
+        dyn_scaling_delay: float = 0.2,
+        smooth_trim_easing: EasingGenerator = None,
+        trim_hat_easing: EasingGenerator = None,
+    ):
         """
         this class was primarily created to address the shortcomings of
         helicopter trim using a conventional joystick (non-FFB joystick).
@@ -42,8 +45,8 @@ class TrimmedAxis:
             * trim_hat_easing (EasingGenerator): easing generator that will be
               used with trim hat. Defaults to None.
 
-        Further explanation: 
-        
+        Further explanation:
+
         1. clamp output: i'm not exactly sure what the desired behavior should
            be when trimming with saturation points. the problem is if you
            specify a y-saturation, then you're saying you don't want the vjoy
@@ -63,14 +66,14 @@ class TrimmedAxis:
 
         1. easing generators are only required if you plan on using smooth trim
            or the trim hat. if you're not going to use them, the generators can
-           stay None 
-        """            
+           stay None
+        """
 
         self._tuned_axis = tuned_axis
         self._tuned_axis._left_tuning = self._tuned_axis._right_tuning
         # TODO i'm only going to support symmetrically tuned axes for now
         self._clamp_output = clamp_output
-        
+
         self._dyn_scaling_degree = utils.clamp(dyn_scaling_degree, 0, 10)
         self._dyn_scaling_delay = utils.clamp(dyn_scaling_delay, 0, 1)
 
@@ -88,7 +91,7 @@ class TrimmedAxis:
         self._prev_scaling = Scaling.Dynamic
         self._output_blocked = False
         self._is_hat_pressed = False
-    
+
     def set_trim(self, trim: float = None) -> None:
         """
         instantly sets trim value and does some additional bookkeeping
@@ -103,18 +106,18 @@ class TrimmedAxis:
             self._trim_offset = self._tuned_axis._axis.get_val()
         else:
             self._trim_offset = trim
-        
+
         self._trim_offset = utils.clamp(self._trim_offset, -1, 1)
         self._recalc_max_scaling_coef()
 
     def _recalc_max_scaling_coef(self):
-        '''recalcs max scaling coef. call this after setting trim'''
+        """recalcs max scaling coef. call this after setting trim"""
 
         # NOTE axes are symmetrical for now (same tuning for left and right).
         # max output is +-saturation.y and the required input to do that is
         # saturation.x
         y_sat = self._tuned_axis._right_tuning.saturation_pt.y
-        
+
         # the max distance we'll have to go is abs(trim) + y saturation
         max_dist = abs(self._trim_offset) + y_sat
 
@@ -123,7 +126,7 @@ class TrimmedAxis:
 
         # NOTE if the scaling is correct, the far saturation point should not
         # move as we trim!
-    
+
     def _calc_dynamic_scaling_coef(self, raw_input: float) -> float:
         """
         calculate dynamic scaling coef based on input
@@ -141,13 +144,13 @@ class TrimmedAxis:
         # if we're below the scaling delay, return no scaling at all (coef = 1)
         if raw_input < self._dyn_scaling_delay:
             return 1
-        
-        # else calc a "dynamic" scaling coef. 
-        
-        # it's easiest to deal with normalized inputs/outputs ranging from [0,
-        # 1] which can be denormalized later on. 
 
-        # the normalized range over which scaling occurs 
+        # else calc a "dynamic" scaling coef.
+
+        # it's easiest to deal with normalized inputs/outputs ranging from [0,
+        # 1] which can be denormalized later on.
+
+        # the normalized range over which scaling occurs
         # 1. would normally be [0, 1]
         # 2. but if we have a saturation setting, (for example where you want
         #    the axis value to max out at just 90% of stick deflection), then
@@ -157,18 +160,21 @@ class TrimmedAxis:
         #
         # TODO this is still not quite right. the problem is idk exactly what i
         # want the desired behavior to be.
-        
+
         # norm_input = utils.normalize(raw_input, self._dyn_scaling_delay, 1)
-        norm_input = utils.normalize(raw_input, self._dyn_scaling_delay, 
-                                     self._tuned_axis._right_tuning.saturation_pt.x)
+        norm_input = utils.normalize(
+            raw_input,
+            self._dyn_scaling_delay,
+            self._tuned_axis._right_tuning.saturation_pt.x,
+        )
         # NOTE norm_input will now be [0, 1]
 
         # apply power (norm_input is still [0, 1])
-        norm_input = norm_input ** self._dyn_scaling_degree
+        norm_input = norm_input**self._dyn_scaling_degree
         # TODO this could actually be replaced with any smoothing function. it's
         # currently equivalent to smooth start. i don't think it makes sense to
         # use anything else though. (if changed remember to update UI graphs!)
-        
+
         # use the normalized input to lerp the scaling coef
         # 1. input of 0 -> scaling coef of 1 (no scaling)
         # 2. input of 1 -> max scaling coef
@@ -178,11 +184,11 @@ class TrimmedAxis:
         # desired saturation point behavior), then coef can go over max, so
         # clamp it
         dyn_scaling_coef = utils.clamp(dyn_scaling_coef, 1, self._max_scaling_coef)
-        
+
         return dyn_scaling_coef
 
     def _get_scaling_coef(self, raw_input: float, scaling_type: Scaling) -> float:
-        '''return scaling coefficient based on the scaling type'''
+        """return scaling coefficient based on the scaling type"""
         if scaling_type == Scaling.Nil:
             return 1
         if scaling_type == Scaling.Static:
@@ -200,18 +206,18 @@ class TrimmedAxis:
 
         Returns:
             float: output for vjoy
-        """        
+        """
 
         output = self._tuned_axis.calc_output(raw_input)
         scaling_coef = self._get_scaling_coef(raw_input, scaling_type)
         output *= scaling_coef
         output += self._trim_offset
-        
+
         if self._clamp_output:
             # clamp so output can never be more than desired y saturation
             y_sat = self._tuned_axis._right_tuning.saturation_pt.y
             output = utils.clamp(output, -y_sat, y_sat)
-        
+
         return output
 
     def set_vjoy(self, raw_input: float, scaling_type: Scaling):
@@ -221,25 +227,25 @@ class TrimmedAxis:
         Args:
             * raw_input (float) [-1, 1]: controller's raw input value
             * scaling_type (Scaling): scaling type we want done
-        """        
+        """
 
         # always update prev raw input so we know when the physical stick gets
         # centered (for central pos trim mode)
         self._prev_raw_input = raw_input
         self._prev_scaling = scaling_type
-        
+
         if self._output_blocked:
             return
-        
+
         output = self.calc_output(raw_input, scaling_type)
-        
+
         # set the axis's value directly
         self._tuned_axis._axis.set_val(output)
 
     def inc_trim(self, delta: float):
         """
         instantly increments trim by the specified amount
-        """        
+        """
         self.set_trim(self._trim_offset + delta)
 
     def trim_timed(self, trim: float = None, time_s: float = 0.3):
@@ -252,7 +258,7 @@ class TrimmedAxis:
               using the vjoy axis's current value. Defaults to None.
             * time_s (float, optional): duration to block outputs for. Defaults
               to 0.3.
-        """        
+        """
 
         # set trim and start thread to sleep
         self._output_blocked = True
@@ -274,12 +280,11 @@ class TrimmedAxis:
         Args:
             * trim (float, optional) [-1, 1]: if None, trim is automatically set
               using the vjoy axis's current value. Defaults to None.
-        """        
+        """
 
         threading.Thread(target=self.__async_trim_smooth, args=[trim]).start()
 
     def __async_trim_smooth(self, trim: float):
-        
         if trim is None:
             trim = self._tuned_axis._axis.get_val()
 
@@ -296,7 +301,7 @@ class TrimmedAxis:
             self.set_trim(starting_trim + output)
             self.set_vjoy(self._prev_raw_input, self._prev_scaling)
             time.sleep(self._smooth_trim_easing.get_sleep_time())
-        
+
     def trim_central(self, trim: float = None, center: float = 0.05):
         """
         sets trim and blocks output until the controller is returned to a
@@ -307,7 +312,7 @@ class TrimmedAxis:
               using the vjoy axis's current value. Defaults to None.
             * center (float, optional) [0, 1]: allowable margin for considering
               the axis centered. Defaults to 0.05.
-        """        
+        """
 
         self._output_blocked = True
         self.set_trim(trim)
@@ -347,7 +352,6 @@ class TrimmedAxis:
 
 
 class CentralTrimmerBundle:
-
     def __init__(self, axes_list, centers_list):
         """
         this is a class made to handle a bundle of central trimmer axes since
@@ -359,17 +363,17 @@ class CentralTrimmerBundle:
               this bundle
             * centers_list (List[float]): list of centers required for each axis
               to be considered centered. ALL axes have to be below their
-              respective value to clear output blocking 
-        """        
+              respective value to clear output blocking
+        """
 
-        assert(len(axes_list) == len(centers_list))
+        assert len(axes_list) == len(centers_list)
 
         self._axes = axes_list
         self._centers = centers_list
 
         self._centers_need_checked = False
 
-    def trim_central(self, trims_list = None):
+    def trim_central(self, trims_list=None):
         """
         sets trim and blocks output until all controllers have been centered
 
@@ -377,7 +381,7 @@ class CentralTrimmerBundle:
             * trims_list (List[float]): list of trim values to set for each
               axis. setting this to None uses the vjoy axis's current val for
               each axis in the bundle.
-        """        
+        """
 
         if trims_list is None:
             trims_list = [None] * len(self._axes)
@@ -407,7 +411,7 @@ class CentralTrimmerBundle:
         # blocking on all of them
         for axis in self._axes:
             axis._output_blocked = False
-        
+
         self._centers_need_checked = False
 
 
@@ -416,13 +420,15 @@ if __name__ == "__main__":
 
     tuning = AxisTuning(0.5)
     tuned_axis = TunedAxis(1, tuning)
-    
-    trimmed_axis = TrimmedAxis(tuned_axis, 
-        smooth_trim_easing=EasingGenerator.ConstantRate(SmoothStep(2, 2), 1, 1, 20))
+
+    trimmed_axis = TrimmedAxis(
+        tuned_axis,
+        smooth_trim_easing=EasingGenerator.ConstantRate(SmoothStep(2, 2), 1, 1, 20),
+    )
 
     trimmed_axis.set_vjoy(0, Scaling.Dynamic)
     trimmed_axis.inc_trim(0.1)
-    
+
     trimmed_axis.set_trim(0)
     trimmed_axis.trim_smooth(0.1)
     trimmed_axis.trim_smooth(-0.2)

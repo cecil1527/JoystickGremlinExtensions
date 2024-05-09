@@ -1,13 +1,12 @@
-'''a single point of contact with joystick gremlin in case it changes'''
+"""a single point of contact with joystick gremlin in case it changes"""
 
-
-'''
+"""
 https://stackoverflow.com/questions/3496592/conditional-import-of-modules-in-python
 
 if you run the code from a JG plugin, it should import the real gremlin package.
 but if you run the code standalone, then it'll import my little mock package
 instead
-'''
+"""
 
 try:
     import gremlin
@@ -31,7 +30,7 @@ def _get_vjoy_proxy():
     # i think that's right
     # * because if you log vjoy proxy IDs, they're all different, but each
     #   instance of the proxy class doesn't matter, only the class's static
-    #   dictionary matters. 
+    #   dictionary matters.
     # * and if you log a device's button/axis IDs, they're all the same for a
     #   particular index, so it'a all pointing to the same underlying object for
     #   that button/axis.
@@ -53,7 +52,7 @@ class VjoyAxis:
 
     def get_val(self) -> float:
         return self.__axis.value
-    
+
     def set_val(self, val) -> None:
         val = utils.clamp(val, -1.0, 1.0)
         self.__axis.value = val
@@ -63,7 +62,7 @@ class VjoyAxis:
         # before setting vjoy axis val
 
     def inc_val(self, delta) -> None:
-        '''increment axis value by delta'''
+        """increment axis value by delta"""
 
         # use set val so it clamps correctly
         self.set_val(self.get_val() + delta)
@@ -78,7 +77,7 @@ class VjoyButton:
 
     def set_pressed(self, b: bool) -> None:
         self.__button.is_pressed = b
-    
+
     def press(self) -> None:
         self.set_pressed(True)
 

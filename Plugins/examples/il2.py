@@ -14,6 +14,7 @@ pp_rel_axis = RelativeAxis(8, pp_easing)
 pp_stepper_vals = StepperVals.FromSpecificVals([2550, 2700, 3000], (1000, 3000))
 pp_stepper_axis = StepperAxis(8, pp_stepper_vals, 2)
 
+
 @stick.hat(1)
 def adj_pp(event, joy):
     if is_paddle_pulled(joy):
@@ -29,6 +30,7 @@ def adj_pp(event, joy):
         # then it activates the center, because it's only a 4-way hat
         pp_rel_axis.release()
 
+
 @stick.button(6)  # master mode forward
 def max_pp(event, joy):
     if is_paddle_pulled(joy):
@@ -36,6 +38,7 @@ def max_pp(event, joy):
 
     if event.is_pressed:
         pp_stepper_axis.go_to_max_index()
+
 
 @stick.button(7)  # master mode aft
 def step_pp_lower(event, joy):
@@ -47,6 +50,7 @@ def step_pp_lower(event, joy):
         # from relative axis manipulation
         pp_stepper_axis.prev_value()
 
+
 # wingspan axis ----------------------------------------------------------------
 # 109, 190, 262, 110, ju88, he111 wingspans in ft are [32, 34, 41, 53, 59, 74]
 # but since the 109 and 190 wingspans are so close, you can just do 33 for both
@@ -55,6 +59,7 @@ wingspan_stepper_vals = StepperVals.FromSpecificVals([33, 41, 53, 59, 74], (30, 
 wingspan_stepper_axis = StepperAxis(7, wingspan_stepper_vals, 0)
 wingspan_axis_button = AxisButton(0.25)
 wingspan_easing = EasingGenerator.ConstantTime(SmoothStart(2), 0.05, 2, 50)
+
 
 @throttle.axis(1)  # front slew x axis
 def front_slew_x_moved(event, joy):
@@ -68,12 +73,14 @@ def front_slew_x_moved(event, joy):
     elif state == AxisButton.State.PressedLow:
         wingspan_stepper_axis.prev_index()
 
+
 # flaps hold -------------------------------------------------------------------
 
 # flaps sometimes need held for a long time in certain planes, so do a "sticky"
 # button when paddle is pulled
 
 sticky_flaps = StickyButtons([10, 11])
+
 
 @throttle.button(28)  # bottom thumb hat down
 def flaps_dn(event, joy):
@@ -85,6 +92,7 @@ def flaps_dn(event, joy):
             return
         sticky_flaps.release(11)
 
+
 @throttle.button(30)  # bottom thumb hat up
 def flaps_up(event, joy):
     if event.is_pressed:
@@ -95,9 +103,11 @@ def flaps_up(event, joy):
             return
         sticky_flaps.release(10)
 
+
 # trim hold --------------------------------------------------------------------
 
 sticky_trim = StickyButtons([12, 13])
+
 
 @stick.button(9)  # trim hat up
 def trim_nose_dn(event, joy):
@@ -107,6 +117,7 @@ def trim_nose_dn(event, joy):
     else:
         # always release this trim direction
         sticky_trim.release(13)
+
 
 @stick.button(11)  # trim hat dn
 def trim_nose_up(event, joy):

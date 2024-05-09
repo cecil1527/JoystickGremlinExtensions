@@ -4,7 +4,6 @@ from jge.gremlin_interface import VjoyButton
 
 
 class DoubleClickToggle:
-
     def __init__(self, button_id: int, double_click_time_s: float, device_id: int = 1):
         """
         controls a vjoy button, toggling it on/off depending on if you double

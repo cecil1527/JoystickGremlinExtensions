@@ -18,9 +18,11 @@
 
 import sys
 
+
 def insert_if_not_present(path: str) -> None:
     if path not in sys.path:
         sys.path.insert(0, path)
+
 
 # add the location that contains your Plugins and jge folder to sys.path so we
 # can freely import python modules from it

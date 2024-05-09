@@ -11,14 +11,14 @@ class SmoothStart:
 
         Args:
             degree (float): degree of polynomial to use
-        """        
+        """
         self._degree = degree
-    
+
     def __call__(self, input: float) -> float:
         return self.output(input)
 
     def output(self, input: float) -> float:
-        return input ** self._degree
+        return input**self._degree
 
 
 class SmoothStop:
@@ -29,13 +29,13 @@ class SmoothStop:
 
         Args:
             degree (float): degree of polynomial to use
-        """        
+        """
         self._degree = degree
-    
+
     def __call__(self, input: float) -> float:
         return self.output(input)
 
-    def output(self, input: float) -> float:      
+    def output(self, input: float) -> float:
         return 1 - (1 - input) ** self._degree
 
 
@@ -48,26 +48,27 @@ class SmoothStep:
         Args:
             start_degree (float): degree of polynomial to use to start
             stop_degree (float): degree of polynomial to use to stop
-        """        
+        """
         self._smooth_start = SmoothStart(start_degree)
         self._smooth_stop = SmoothStop(stop_degree)
-    
+
     def __call__(self, input: float) -> float:
         return self.output(input)
 
     def output(self, input: float) -> float:
-        return utils.lerp(0, self._smooth_start(input),
-                          1, self._smooth_stop(input),
-                          input)
+        return utils.lerp(
+            0, self._smooth_start(input), 1, self._smooth_stop(input), input
+        )
 
 
 class EasingGenerator:
-    def __init__(self, easing_fn, magnitude: float, num_steps: int, 
-                 sleep_time_s: float) -> None:
+    def __init__(
+        self, easing_fn, magnitude: float, num_steps: int, sleep_time_s: float
+    ) -> None:
         """
         a helper class to generate values for stepping along an easing function
-        during a loop. it'll tell you: 
-        
+        during a loop. it'll tell you:
+
         1. how many steps to loop for
         2. the current smoothed value
         3. how long to sleep for in each loop iteration
@@ -79,7 +80,7 @@ class EasingGenerator:
               function by
             * num_steps (int): num steps until magnitude is reached
             * sleep_time_s (float): sleep time in seconds
-        """        
+        """
 
         self._easing_fn = easing_fn
         self._magnitude = magnitude
@@ -97,14 +98,13 @@ class EasingGenerator:
 
         Returns:
             EasingGenerator: returns a copy of the easing generator
-        """        
+        """
         c = copy.copy(self)
         c.reset()
         return c
 
     @staticmethod
-    def ConstantTime(easing_fn, magnitude: float, time_s: float, 
-                     frequency_hz: float):
+    def ConstantTime(easing_fn, magnitude: float, time_s: float, frequency_hz: float):
         """
         makes EasingGenerator that reaches magnitude in a constant time.
 
@@ -119,7 +119,7 @@ class EasingGenerator:
 
         Returns:
             EasingGenerator:
-        """        
+        """
 
         num_steps = round(frequency_hz * time_s)
         sleep_time = 1.0 / frequency_hz
@@ -130,7 +130,7 @@ class EasingGenerator:
         """
         makes EasingGenerator that reaches magnitude at a "constant rate".
         (it'll reach full magnitude in magnitude/rate seconds)
-        
+
         Args:
             * easing_fn (function/functor): should take in normalized input [0,
               1] and produce normalized output [0, 1]
@@ -148,7 +148,7 @@ class EasingGenerator:
         duration of use is constant. the basic idea is, if you have a rate of
         10, then the easing generator will go from 0 to magnitude in
         magnitude/10 seconds.
-        
+
         Example:
 
         * rate is 5. the easing generator will go from a magnitude of:
@@ -156,8 +156,8 @@ class EasingGenerator:
         * 0 to 10 in 2.0s
         * 0 to 15 in 3.0s
         * etc.
-        """        
-        
+        """
+
         time_s = magnitude / rate
         num_steps = round(frequency_hz * time_s)
         sleep_time = 1.0 / frequency_hz
@@ -177,7 +177,7 @@ class EasingGenerator:
         self._magnitude = magnitude
 
     def reset(self) -> None:
-        '''reset internal values. call this before beginning your loop'''
+        """reset internal values. call this before beginning your loop"""
         self._normalized_val = 0
 
     def _increment(self) -> None:
@@ -186,23 +186,23 @@ class EasingGenerator:
         self._normalized_val = utils.clamp(self._normalized_val, 0, 1)
 
     def get_output(self) -> float:
-        '''increment and get next output value'''
+        """increment and get next output value"""
         self._increment()
         return self._magnitude * self._easing_fn(self._normalized_val)
-    
+
     def get_sleep_time(self) -> float:
-        '''
+        """
         returns time to sleep (in seconds), so when you call this in a loop,
         you'll be generating output values at the desired frequency.
-        '''
+        """
         return self._sleep_time_s
 
     def get_num_steps(self) -> int:
-        '''
+        """
         returns number of steps to reach full magnitude. if your loop is
         supposed to go from [0, mag] and stop, you'll call your loop for this
         number of steps
-        '''
+        """
         return self._num_steps
 
 
@@ -220,7 +220,7 @@ if __name__ == "__main__":
     print("\nsmooth stop")
     for x, y in zip(xs, ys):
         print(f"{x},{y}")
-    
+
     smooth_step = SmoothStep(3, 3)
     ys = [smooth_step(x) for x in xs]
     print("\nsmooth step")
@@ -228,6 +228,7 @@ if __name__ == "__main__":
         print(f"{x},{y}")
 
     import time
+
     print("\nEasing Generator Constant Time")
     easing_gen_ct = EasingGenerator.ConstantTime(smooth_step, 100, 2, 20)
     t1 = time.time()
