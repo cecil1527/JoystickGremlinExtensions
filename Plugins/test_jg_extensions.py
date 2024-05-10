@@ -122,7 +122,7 @@ def toggle_rwr(event):
 
 
 # test relative axis -----------------------------------------------------------
-rel_ax_easing = EasingGenerator(SmoothStart(2), 1, 2, 20)
+rel_ax_easing = EasingGenerator.ConstantTime(SmoothStart(2), 2, 20)
 range_axis = RelativeAxis(3, rel_ax_easing)
 
 
@@ -182,9 +182,9 @@ def left_throttle_moved(event):
 
 # test trim axis ---------------------------------------------------------------
 tuning = AxisTuning(0.5)
-trim_eg_ct = EasingGenerator.ConstantTime(SmoothStep(2, 2), 1, 1, 20)
-trim_eg_cr = EasingGenerator.ConstantRate(SmoothStep(2, 2), 1, 0.5, 20)
-hat_eg_ct = EasingGenerator.ConstantTime(SmoothStart(2), 0.05, 1.0, 20)
+trim_eg_ct = EasingGenerator.ConstantTime(SmoothStep(2, 2), 1, 20)
+trim_eg_cr = EasingGenerator.ConstantRate(SmoothStep(2, 2), 0.5, 20)
+hat_eg_ct = EasingGenerator.ConstantTime(SmoothStart(2), 1, 20, 0.05)
 
 x_trimmed_axis = TrimmedAxis(
     TunedAxis(6, tuning), smooth_trim_easing=trim_eg_ct, trim_hat_easing=hat_eg_ct

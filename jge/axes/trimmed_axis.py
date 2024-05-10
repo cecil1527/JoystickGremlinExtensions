@@ -423,7 +423,7 @@ if __name__ == "__main__":
 
     trimmed_axis = TrimmedAxis(
         tuned_axis,
-        smooth_trim_easing=EasingGenerator.ConstantRate(SmoothStep(2, 2), 1, 1, 20),
+        smooth_trim_easing=EasingGenerator.ConstantRate(SmoothStep(2, 2), 1, 20, 1),
     )
 
     trimmed_axis.set_vjoy(0, Scaling.Dynamic)

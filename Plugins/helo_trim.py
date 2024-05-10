@@ -39,7 +39,7 @@ z_curvature = FloatVariable(
 
 # setup ------------------------------------------------------------------------
 
-easing = EasingGenerator.ConstantTime(SmoothStep(2, 2), 1, 0.75, 50)
+easing = EasingGenerator.ConstantTime(SmoothStep(2, 2), 0.75, 50)
 x_axis = TrimmedAxis(
     TunedAxis(1, AxisTuning(x_curvature.value)), smooth_trim_easing=easing
 )

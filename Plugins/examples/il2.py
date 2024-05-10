@@ -8,7 +8,7 @@ from jge.sticky_buttons import StickyButtons
 
 # prop pitch axis --------------------------------------------------------------
 
-pp_easing = EasingGenerator.ConstantTime(SmoothStart(2), 0.05, 1, 50)
+pp_easing = EasingGenerator.ConstantTime(SmoothStart(2), 1, 50, 0.05)
 pp_rel_axis = RelativeAxis(8, pp_easing)
 
 pp_stepper_vals = StepperVals.FromSpecificVals([2550, 2700, 3000], (1000, 3000))
@@ -58,7 +58,7 @@ def step_pp_lower(event, joy):
 wingspan_stepper_vals = StepperVals.FromSpecificVals([33, 41, 53, 59, 74], (30, 100))
 wingspan_stepper_axis = StepperAxis(7, wingspan_stepper_vals, 0)
 wingspan_axis_button = AxisButton(0.25)
-wingspan_easing = EasingGenerator.ConstantTime(SmoothStart(2), 0.05, 2, 50)
+wingspan_easing = EasingGenerator.ConstantTime(SmoothStart(2), 2, 50, 0.05)
 
 
 @throttle.axis(1)  # front slew x axis
