@@ -34,6 +34,8 @@ z_curvature = FloatVariable(
     is_optional=False,
 )
 
+# TODO JG min values on floats don't seem to work :(
+
 # TODO the only variables i ever change per airframe are curvature values, so
 # it's all the further i'm taking this plugin's UI for now.
 

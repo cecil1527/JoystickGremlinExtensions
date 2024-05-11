@@ -1,9 +1,13 @@
+import time
+
 import dearpygui.dearpygui as dpg
 import pyperclip
 
+import jge.utils as utils
 from jge.utils import Vec2
 from jge.axes.tuned_axis import AxisTuning, TunedAxis
 from jge.axes.trimmed_axis import Scaling, TrimmedAxis
+from jge.easing_functions import EasingGenerator, SmoothStep
 
 
 widget_help_txt = """Ctrl+click to enter a specific value.
@@ -237,6 +241,7 @@ class App:
 
             dpg_add_blank_line()
             dpg.add_button(label="Copy to clipboard", callback=self.copy_to_clipboard)
+            dpg.add_button(label="Animate", callback=self.animate)
 
         self.update()
 
@@ -332,6 +337,35 @@ class App:
         s += f"\ntrimmed_axis = TrimmedAxis(tuned_axis, {clamp_output}, {dyn_scaling_degree}, {dyn_scaling_delay})"
 
         pyperclip.copy(s)
+
+    def animate(self):
+        """for making gifs"""
+
+        dpg.configure_app(wait_for_input=False)
+
+        tag = self.trim_widgets.trim_tag
+        smooth_func = SmoothStep(2, 2)
+        easing_generators = [
+            EasingGenerator.ConstantTime(smooth_func, 1, 100),
+            EasingGenerator.ConstantTime(smooth_func, 2, 100),
+            EasingGenerator.ConstantTime(smooth_func, 1, 100),
+        ]
+        intervals = [
+            (0, 1),
+            (1, -1),
+            (-1, 0),
+        ]
+
+        for easing, interval in zip(easing_generators, intervals):
+            time.sleep(0.5)
+            for _ in range(easing.get_num_steps()):
+                norm_val = easing.get_output()
+                val = utils.lerp(0, interval[0], 1, interval[1], norm_val)
+                dpg.set_value(tag, val)
+                self.update()
+                time.sleep(easing.get_sleep_time())
+
+        dpg.configure_app(wait_for_input=True)
 
 
 if __name__ == "__main__":
