@@ -1,9 +1,9 @@
 import gremlin
 
-from jge.utils import LookupTable
+from jge.utils.lut import LookupTable
 from jge.gremlin_interface import VjoyAxis, VjoyButton
 from jge.double_click_toggle import DoubleClickToggle
-from jge.easing_functions import EasingGenerator, SmoothStart, SmoothStep
+from jge.utils.easing_functions import EasingGenerator, SmoothStart, SmoothStep
 from jge.axes.axis_button import AxisButton
 from jge.axes.stepper_axis import StepperVals, StepperAxis
 from jge.axes.toggle_axis import ToggleAxis

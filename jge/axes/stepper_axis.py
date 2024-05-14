@@ -1,4 +1,4 @@
-from jge import utils
+from jge.utils import utils
 from jge.gremlin_interface import VjoyAxis
 
 

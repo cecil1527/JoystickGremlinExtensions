@@ -1,5 +1,5 @@
 from jge.gremlin_interface import VjoyAxis
-from jge.utils import LookupTable
+from jge.utils.lut import LookupTable
 
 
 class LutAxis:

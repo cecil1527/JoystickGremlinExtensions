@@ -1,7 +1,7 @@
 import threading
 import time
 
-from jge.easing_functions import EasingGenerator
+from jge.utils.easing_functions import EasingGenerator
 from jge.gremlin_interface import VjoyAxis
 
 

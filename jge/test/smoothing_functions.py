@@ -1,6 +1,6 @@
 import dearpygui.dearpygui as dpg
 
-from jge.easing_functions import SmoothStart, SmoothStop, SmoothStep
+from jge.utils.easing_functions import SmoothStart, SmoothStop, SmoothStep
 
 
 class App:

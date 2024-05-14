@@ -3,11 +3,11 @@ import time
 import dearpygui.dearpygui as dpg
 import pyperclip
 
-import jge.utils as utils
-from jge.utils import Vec2
+from jge.utils import utils
+from jge.utils.vec2 import Vec2
 from jge.axes.tuned_axis import AxisTuning, TunedAxis
 from jge.axes.trimmed_axis import Scaling, TrimmedAxis
-from jge.easing_functions import EasingGenerator, SmoothStep
+from jge.utils.easing_functions import EasingGenerator, SmoothStep
 
 
 widget_help_txt = """Ctrl+click to enter a specific value.

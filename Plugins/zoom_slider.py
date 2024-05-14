@@ -1,8 +1,8 @@
 import gremlin
 from gremlin.user_plugin import *
 
-from jge import utils
-from jge.utils import LookupTable
+from jge.utils import utils
+from jge.utils.lut import LookupTable
 from jge.axes.lut_axis import LutAxis
 
 # https://whitemagic.github.io/JoystickGremlin/user_plugins_code/

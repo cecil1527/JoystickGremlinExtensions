@@ -13,7 +13,7 @@ try:
 except ImportError:
     import jge.gremlin_mock as gremlin
 
-from jge import utils
+from jge.utils import utils
 
 
 def _get_vjoy_proxy():

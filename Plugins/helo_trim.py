@@ -1,6 +1,6 @@
 from gremlin.user_plugin import *
 
-from jge.easing_functions import EasingGenerator, SmoothStep
+from jge.utils.easing_functions import EasingGenerator, SmoothStep
 from jge.axes.tuned_axis import AxisTuning, TunedAxis
 from jge.axes.trimmed_axis import Scaling, TrimmedAxis
 

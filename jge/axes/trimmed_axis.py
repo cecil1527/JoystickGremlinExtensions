@@ -2,9 +2,9 @@ import threading
 import time
 from enum import Enum
 
-from jge import utils
+from jge.utils import utils
 from jge.axes.tuned_axis import TunedAxis, AxisTuning
-from jge.easing_functions import EasingGenerator
+from jge.utils.easing_functions import EasingGenerator
 
 
 class Scaling(Enum):
@@ -416,7 +416,7 @@ class CentralTrimmerBundle:
 
 
 if __name__ == "__main__":
-    from jge.easing_functions import SmoothStep
+    from jge.utils.easing_functions import SmoothStep
 
     tuning = AxisTuning(0.5)
     tuned_axis = TunedAxis(1, tuning)

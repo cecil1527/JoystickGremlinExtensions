@@ -1,6 +1,6 @@
 from Plugins.device_decorators import stick, throttle, is_paddle_pulled
 
-from jge.easing_functions import SmoothStart, EasingGenerator
+from jge.utils.easing_functions import SmoothStart, EasingGenerator
 from jge.axes.stepper_axis import StepperVals, StepperAxis
 from jge.axes.relative_axis import RelativeAxis
 from jge.axes.axis_button import AxisButton
