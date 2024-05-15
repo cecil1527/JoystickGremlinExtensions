@@ -4,7 +4,7 @@ from jge.utils.easing_functions import SmoothStart, EasingGenerator
 from jge.axes.stepper_axis import StepperVals, StepperAxis
 from jge.axes.relative_axis import RelativeAxis
 from jge.axes.axis_button import AxisButton
-from jge.sticky_buttons import StickyButtons
+from jge.buttons.sticky_buttons import StickyButtons
 
 # prop pitch axis --------------------------------------------------------------
 

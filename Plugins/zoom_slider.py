@@ -89,11 +89,7 @@ smoothing = PassthroughSmoothing(ExponentialSmoothing(coef), pasthrough)
 
 zoom_axis = LutAxis(
     vjoy_axis_num.value,
-    LookupTable.FromPoints(
-        (-1, -1),
-        (0, fov_val),
-        (1, 1),
-    ),
+    LookupTable.FromPoints([(-1, -1), (0, fov_val), (1, 1)]),
 )
 axis_dectorator = controller_axis.create_decorator(mode.value)
 

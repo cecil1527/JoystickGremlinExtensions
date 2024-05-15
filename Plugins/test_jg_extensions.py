@@ -2,7 +2,6 @@ import gremlin
 
 from jge.utils.lut import LookupTable
 from jge.gremlin_interface import VjoyAxis, VjoyButton
-from jge.double_click_toggle import DoubleClickToggle
 from jge.utils.easing_functions import EasingGenerator, SmoothStart, SmoothStep
 from jge.axes.axis_button import AxisButton
 from jge.axes.stepper_axis import StepperVals, StepperAxis
@@ -11,6 +10,7 @@ from jge.axes.relative_axis import RelativeAxis
 from jge.axes.lut_axis import LutAxis
 from jge.axes.tuned_axis import AxisTuning, TunedAxis
 from jge.axes.trimmed_axis import CentralTrimmerBundle, Scaling, TrimmedAxis
+from jge.buttons.double_click_toggle import DoubleClickToggle
 from jge.buttons.chain import Chain
 from jge.buttons.macro import MacroEntries, Macro
 from jge.buttons.tempo import Tempo
@@ -147,16 +147,13 @@ def range_dec(event):
 
 # test LUT axis ----------------------------------------------------------------
 lut = LookupTable.FromPoints(
-    (-1, -1),
-    # flat spot left of center
-    (-0.5, -0.05),
-    (-0.01, -0.05),
-    # center
-    (0, 0),
-    # flat spot right of center
-    (0.01, 0.05),
-    (0.5, 0.05),
-    (1, 1),
+    [
+        # flat spot right of center
+        (0.01, 0.05),
+        (0.5, 0.05),
+        (1, 1),
+    ],
+    make_symmetrical=True,
 )
 lut_axis = LutAxis(2, lut)
 

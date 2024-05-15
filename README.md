@@ -1,9 +1,5 @@
 # What is Joystick Gremlin Extensions?
-JGE is a handful of python modules meant to be used in JG user plugins.
-
-* Currently it's all axis manipulation.
-* But I'd like to add button modules in the future (macros, tempos, chains, etc.), so that you can have more control than what JG currently exposes to the user. 
-    * I'd like to be able to conditionally reset a chain, for example.
+JGE is a handful of python modules meant to be used in JG user plugins. There are axis modules and button modules.
 
 # Dependencies
 At the time of writing:
@@ -22,7 +18,7 @@ At the time of writing:
 1. Or you can make your own plugin, using JGE modules.
     1. [If you're unfamiliar with writing your own JG user plugins, go here.](https://whitemagic.github.io/JoystickGremlin/user_plugins/)
 
-# What's included in JGE?
+# Axis Modules
 
 ## Tuned Axis
 This is essentially DCS axis tuning, except:
@@ -116,3 +112,16 @@ These are a lot simpler than the two axis modules above.
 
 1. **Toggle Axis**: Toggles between some value and its previous value. 
     * Useful for making a volume axis so you can easy toggle mute or a really low volume.
+
+# Button Modules
+
+JG has a lot of this functionality already, but these modules tend to expose more to the user. You can pass any callable into them and you can conditionally reset a chain, for example.
+
+1. **Double-Click Toggle**: Toggles a vjoy button on when double-clicked. Single clicks result in normal press/release.
+    * Useful for conditionally holding a button, like a G-Limit override.
+1. **Sticky Buttons**: Buttons that stick on, with helper functions to release the rest.
+    * Useful when you need to hold a button for a long time, but never want to hold two conflicting buttons at once.
+1. **Macro**: Press/release vjoy buttons or keyboard keys in rapid succession.
+    * Use the namespace `MacroEntries` which contains a helper function for creating a sequence of macro entries using shorthand.
+1. **Tempo**: A container that executes one action when short pressed, and executes another when held.
+1. **Chain**: A container that executes a sequence of actions, one per press, before resetting.
